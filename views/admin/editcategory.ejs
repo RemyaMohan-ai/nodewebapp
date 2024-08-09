@@ -1,0 +1,126 @@
+<%- include('../layouts/admin_layouts/adminHeader.ejs') %>
+
+
+<div class="main-content">
+    <!-- main-content-wrap -->
+    <div class="main-content-inner">
+        <!-- main-content-wrap -->
+        <div class="main-content-wrap">
+            <div class="flex items-center flex-wrap justify-between gap20 mb-27">
+                <h3>Category infomation</h3>
+                <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+                    <li>
+                        <a href="index.html"><div class="text-tiny">Dashboard</div></a>
+                    </li>
+                    <li>
+                        <i class="icon-chevron-right"></i>
+                    </li>
+                    <li>
+                        <a href="#"><div class="text-tiny">Category</div></a>
+                    </li>
+                    <li>
+                        <i class="icon-chevron-right"></i>
+                    </li>
+                    <li>
+                        <div class="text-tiny">Edit category</div>
+                    </li>
+                </ul>
+            </div>
+            <!-- new-category -->
+            <div class="wg-box">
+                <form method="post" action="/admin/editcategory/<%= category._id %>" class="form-new-product form-style-1">
+                    <fieldset class="name">
+                        <div class="body-title">Category name <span class="tf-color-1">*</span></div>
+                        <input id="categoryName" class="flex-grow" type="text" placeholder="Category name" name="name" tabindex="0" value="<%= category.name %>">
+                    </fieldset>
+                    <div id="name-error" class="error"></div>
+                
+                    <fieldset class="description">
+                        <div class="body-title">Description <span class="tf-color-1">*</span></div>
+                        <textarea placeholder="Type here" name="description" class="form-control" id="descriptionId"><%= category.description %></textarea>
+                    </fieldset>
+                    <div id="description-error" class="error"></div>
+                    <div class="bot">
+                        <div></div>
+                        <button class="tf-button w208" type="submit">Save</button>
+                    </div>
+                </form>
+                
+            </div> 
+            <!-- /new-category -->
+           
+
+          
+
+             <!-- bottom-page -->
+            <div class="bottom-page">
+                <div class="body-text">Copyright © 2024 Remos. Design with</div>
+                <i class="icon-heart"></i>
+                <div class="body-text">by <a href="https://themeforest.net/user/themesflat/portfolio">Themesflat</a> All rights reserved.</div>
+            </div>
+            <!-- /bottom-page -->
+
+
+<script>
+
+function handleForm(event) {
+    event.preventDefault(); // Prevent default form submission
+    if (!validateForm()) { // Validate the form data
+        return false; // If validation fails, do not proceed
+    }
+
+
+
+    const name = document.getElementById("categoryName").value;
+    const description = document.getElementById('descriptionId').value;
+
+   
+ }
+
+function validateForm() {
+    const categoryName = document.getElementById("categoryName").value.trim();
+    const description = document.getElementById('descriptionId').value.trim();
+
+    let isValid = true;
+
+    // Clear previous error messages
+    document.querySelectorAll(".error").forEach(elem => {
+        elem.textContent = '';
+    });
+
+    // Validate category name
+    if (categoryName === '') {
+        displayErrorMessage('name-error', 'Category name is required.');
+        isValid = false;
+        console.log("name is false");
+         
+    } else if (!/^[a-zA-Z\s]+$/.test(categoryName)) {
+        displayErrorMessage('name-error', 'Category name should be alphabetic.');
+        isValid = false;
+        console.log("name is false");
+    }
+
+    // Validate description
+    if (description === '') {
+        displayErrorMessage('description-error', 'Description is required.');
+        isValid = false;
+        console.log("des is false");
+    }
+
+    return isValid;
+}
+
+function displayErrorMessage(elementId, message) {
+    const errorMessage = document.getElementById(elementId);
+    errorMessage.textContent = message;
+    errorMessage.style.color = 'red';
+    
+    
+}
+
+
+
+
+ </script>
+
+<%- include('../layouts/admin_layouts/adminFooter.ejs') %>

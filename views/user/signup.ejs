@@ -1,0 +1,186 @@
+<%- include('../layouts/user_layouts/userHeader.ejs') %>
+<style>
+    .error{
+        color: rgb(165, 22, 22);
+        font-size: 0.75rem;
+    }
+</style>
+<section class="login_part padding_top">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 col-md-6">
+                <div class="login_part_text text-center">
+                    <div class="login_part_text_iner">
+                        <h2>New to our Shop?</h2>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <div class="login_part_form">
+                    <div class="login_part_form_iner ">
+                        <h3>Create new account</h3>
+                        <% if (typeof message !== 'undefined' && message) { %>
+                            <p class="error" style="font-size: large;"><%= message %></p>
+                        <% } %>
+                        <form  class="row contact_form" action="/signup" method="post"  onsubmit="return validateForm()" >
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" class="form-control" id="name" name="name" value=""
+                                    placeholder="name" required>
+                                    <span class="error" id="nameError"></span>
+                            </div>
+                            <div class="col-md-12 form-group p_star">
+                                <input type="email" class="form-control" id="email" name="email" value=""
+                                    placeholder="email" required>
+                                    <span class="error" id="emailError"></span>
+                            </div>
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" class="form-control" id="mobile" name="mobile" value=""
+                                    placeholder="Mobile" required>
+                                    <span class="error" id="mobileError"></span>
+                            </div>
+                            <div class="col-md-12 form-group p_star">
+                                <input type="password" class="form-control" id="password" name="password" value=""
+                                    placeholder="Password" required>
+                                    <span class="error" id="passwordError"></span>
+                            </div>
+                            <div class="col-md-12 form-group p_star">
+                                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" value=""
+                                    placeholder="confirmPassword" required>
+                                    <span class="error" id="confirmPasswordError"></span>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <!-- <div class="creat_account d-flex align-items-center">
+                                    <input type="checkbox" id="f-option" name="selector">
+                                    <label for="f-option">Remember me</label>
+                                </div> -->
+                                <button type="submit" value="submit" class="btn_3">
+                                    GET OTP
+                                </button>
+                                
+                            </div>
+                            
+                        </form>
+                       
+
+                    </div>
+                    
+                </div>
+            </div>
+            
+        </div>
+
+    </div>
+</section>
+
+<%- include('../layouts/user_layouts/userFooter.ejs') %>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var nameInput = document.getElementById("name");
+        var emailInput = document.getElementById("email");
+        var mobileInput = document.getElementById("mobile");
+        var passwordInput = document.getElementById("password");
+        var confirmPasswordInput = document.getElementById("confirmPassword");
+
+        nameInput.addEventListener('input', validateName);
+        emailInput.addEventListener('input', validateEmail);
+        mobileInput.addEventListener('input', validateMobile);
+        passwordInput.addEventListener('input', validatePassword);
+        confirmPasswordInput.addEventListener('input', validateConfirmPassword);
+    });
+
+    function validateName() {
+        var name = document.getElementById("name").value;
+        var nameError = document.getElementById("nameError");
+        var namePattern = /^[a-zA-Z\s]+$/;
+
+        if (!namePattern.test(name)) {
+            nameError.textContent = "Name can only contain alphabets and spaces.";
+            return false;
+        } else {
+            nameError.textContent = "";
+            return true;
+        }
+    }
+
+    function validateEmail() {
+        var email = document.getElementById("email").value;
+        var emailError = document.getElementById("emailError");
+        var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
+        if (!emailPattern.test(email)) {
+            emailError.textContent = "Please enter a valid email address.";
+            return false;
+        } else {
+            emailError.textContent = "";
+            return true;
+        }
+    }
+
+    function validateMobile() {
+        var mobileNumber = document.getElementById("mobile").value;
+        var mobileError = document.getElementById("mobileError");
+        var mobilePattern = /^\d{10}$/;
+
+        if (!mobilePattern.test(mobileNumber)) {
+            mobileError.textContent = "Mobile number must be 10 digits.";
+            return false;
+        } else {
+            mobileError.textContent = "";
+            return true;
+        }
+    }
+
+    function validatePassword() {
+        var password = document.getElementById("password").value;
+        var passwordError = document.getElementById("passwordError");
+
+        if (password.length < 6) {
+            passwordError.textContent = "Password must be at least 6 characters long.";
+            return false;
+        } else {
+            passwordError.textContent = "";
+            return true;
+        }
+    }
+
+    function validateConfirmPassword() {
+        var password = document.getElementById("password").value;
+        var confirmPassword = document.getElementById("confirmPassword").value;
+        var confirmPasswordError = document.getElementById("confirmPasswordError");
+
+        if (password !== confirmPassword) {
+            confirmPasswordError.textContent = "Passwords do not match.";
+            return false;
+        } else {
+            confirmPasswordError.textContent = "";
+            return true;
+        }
+    }
+
+    function validateForm() {
+        var isValid = true;
+        
+        if (!validateName()) {
+            isValid = false;
+        }
+        
+        if (!validateEmail()) {
+            isValid = false;
+        }
+        
+        if (!validateMobile()) {
+            isValid = false;
+        }
+        
+        if (!validatePassword()) {
+            isValid = false;
+        }
+        
+        if (!validateConfirmPassword()) {
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+</script>

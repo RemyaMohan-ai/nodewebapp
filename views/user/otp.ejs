@@ -1,0 +1,128 @@
+<%- include('../layouts/user_layouts/userHeader.ejs') %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+   <section class="login_part padding_top">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- Other content can go here if needed -->
+            <div class="col-lg-6 col-md-6">
+                <div class="login_part_form">
+                    <div class="login_part_form_iner">
+                        <h3>Enter OTP</h3>
+                        <form class="row contact_form" action="/otp" method="post" onsubmit="return validateOTPForm()">
+                            <div class="col-md-12 form-group p_star">
+                                <input type="string" class="form-control" id="otp" name="otp" value="" placeholder="OTP">
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <button type="submit" value="submit" class="btn_3">Log In</button>
+                            </div>
+                        </form>
+                        <div class="col-md-12 form-group ">
+                            <p id="timer"></p>
+                            <button id="resendBtn" class="btn_3" disabled onclick="resendOTP()">Resend OTP</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    let interval;
+    let timerElement = document.getElementById("timer");
+    let resendButton = document.getElementById("resendBtn");
+    let countdown = 10; // 30 seconds countdown
+
+    function startTimer() {
+        let interval = setInterval(() => {
+            if (countdown > 0) {
+                countdown--;
+                timerElement.textContent = `You can resend OTP in ${countdown} seconds.`;
+            } else {
+                clearInterval(interval);
+                timerElement.textContent = "";
+                resendButton.disabled = false;
+            }
+        }, 1000);
+    }
+
+    function resendOTP() {
+        
+        clearInterval(interval)
+        
+        countdown = 10;
+        resendButton.disabled = true;
+        startTimer();
+        $.ajax({
+            type:"post",
+            url:"resendotp",
+            success: function (response) {
+                if(response.success){
+                    Swal.fire({
+                        icon:"success",
+                        title:"OTP resend successfully",
+                        
+                    })
+                }else{
+                    Swal.fire({
+                        icon:"error",
+                        title:"error",
+                        text:"OTP resend failed",
+                        
+                    })
+                }
+            }
+        })
+        return false;
+    }
+
+    function validateOTPForm() {
+        const otpInput = document.getElementById("otp").value;
+    $.ajax({
+        type: "POST",
+        url: "/otp",
+        data: {
+            otp: otpInput
+        },
+        success: function(response) {
+            if (response.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Success",
+                    text: "OTP validated successfully!",
+                    
+                }).then(()=>{
+                    window.location.href = response.redirecturl;
+                })
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: response.message||"an error occured"
+                });
+            }
+        },
+        error: function() {
+            Swal.fire({
+                icon: "error",
+                title: "Invalid OTP",
+                text: "Please try again"
+            });
+        }
+    });
+    return false;
+}
+
+
+
+    // Start the timer when the page loads
+    window.onload = startTimer;
+
+    
+
+</script>
+
+    <%- include('../layouts/user_layouts/userFooter.ejs') %>
