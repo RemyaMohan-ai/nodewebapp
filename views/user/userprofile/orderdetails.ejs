@@ -1,0 +1,430 @@
+<%- include('../layouts/user_layouts/userHeader.ejs') %>
+
+<style>
+  .detailcontainer {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+    padding-top: 150px;
+  }
+
+  .left-side, .right-side {
+    flex: 1;
+  }
+
+  /* Left Side: Products */
+  .product-list {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  .product-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+  }
+
+  .product-item img {
+    max-width: 100px;
+    max-height: 100px;
+    margin-right: 20px;
+    border-radius: 8px;
+  }
+
+  .product-details {
+    font-size: 16px;
+  }
+
+  .product-details strong {
+    font-size: 18px;
+    color: #333;
+  }
+
+  .order-summary, .shipping-address {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .order-summary p, .shipping-address p {
+    font-size: 16px;
+    margin: 8px 0;
+  }
+
+  .order-summary {
+    text-align: left;
+  }
+
+  .shipping-address {
+    font-size: 16px;
+  }
+
+  h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  h4 {
+    color: #555;
+    margin-bottom: 15px;
+  }
+
+</style>
+
+<div class="container detailcontainer">
+  <div class="row">
+    <div class="col-lg-6">
+      <h4>Products:</h4>
+      <ul class="product-list">
+        <% order.productDetails.forEach((item, index) => { %>
+         
+          <li class="product-item d-flex mb-3">
+            <img src="/productimages/<%= item.productId.productImage[0] %>" alt="<%= item.productId.productName %>" class="img-fluid" style="max-width: 100px; max-height: 100px; margin-right: 20px;">
+            <div class="product-details">
+              <strong><%= item.productId.productName %></strong><br>
+              Quantity: <%= item.quantity %> - Price: ₹<%= item.price%>
+              <div> <%= item.orderStatus %></div>
+            </div>
+           <% if( item.orderStatus =="Delivered"){ %>
+            <button class="btn btn-warning btn-sm ml-auto" data-toggle="modal" data-target="#returnModal<%= index %>">
+              Return
+            </button>
+            <% } else if (item.orderStatus === "Return Requested" || item.orderStatus === "Return Initiated") { %>
+              <button class="btn btn-danger btn-sm ml-auto" data-toggle="modal" data-target="#cancelReturnModal<%= index %>">
+              Cancel Return
+            </button>
+            <% }else if( item.orderStatus =="Pending"||item.orderStatus =="Confirmed"){ %>
+            <button class="btn btn-danger btn-sm ml-auto" data-toggle="modal" data-target="#cancelModal<%= index %>">
+              Cancel
+            </button>
+            <% } %>
+          </li>
+
+
+
+
+       
+          <!-- cancel model -->
+          <div class="modal fade" id="cancelModal<%= index %>" tabindex="-1" role="dialog" aria-labelledby="cancelModalLabel<%= index %>" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cancelModalLabel<%= index %>">Cancel Product</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="cancelForm<%= index %>">
+                            <% if (item.orderStatus === 'Pending' || item.orderStatus === 'Confirmed' ||  item.orderStatus === 'Partially Cancelled') { %>
+                                <p>Are you sure you want to cancel <strong><%= item.productId.productName %></strong>?</p>
+                                <div class="form-group">
+                                    <label for="cancelReason<%= index %>">Reason for Cancellation</label>
+                                    <textarea class="form-control" id="cancelReason<%= index %>" rows="3"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cancelQuantity<%= index %>">Select Quantity to Cancel (Max: <%= item.quantity %>)</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <button class="btn btn-outline-secondary" type="button" onclick="decrementQuantity('<%= index %>', '<%= item.quantity %>')">-</button>
+                                        </div>
+                                        <input type="number" class="form-control text-center" id="cancelQuantity<%= index %>" value="1" min="1" max="<%= item.quantity %>" readonly>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="button" onclick="incrementQuantity('<%= index %>', '<%= item.quantity %>')">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% } else { %>
+                                <p>You cannot cancel the product as the order is in <%= item.orderStatus %> state.</p>
+                            <% } %>
+                        </div>
+        
+                        <div id="cancelMessage<%= index %>" style="display: none;">
+                            <p id="messageContent<%= index %>"></p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <% if (item.orderStatus === 'Pending' || item.orderStatus === 'Confirmed'||  item.orderStatus == 'Partially Cancelled') { %>
+                            <button type="button" class="btn btn-danger" onclick="submitCancellation('<%= order._id %>', '<%= item.productId._id %>', '<%= index %>')">Confirm Cancellation</button>
+                        <% } %>           
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+    <!-- returnmodal -->
+        <div class="modal fade" id="returnModal<%= index %>" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel<%= index %>" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <h5 class="modal-title" id="returnModalLabel<%= index %>">Return Product</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                      </button>
+                  </div>
+                  <div class="modal-body">
+                      <p>Are you sure you want to return <strong><%= item.productId.productName %></strong>?</p>
+                      <div class="form-group">
+                          <label for="returnReason<%= index %>">Reason for Return</label>
+                          <textarea class="form-control" id="returnReason<%= index %>" rows="3"></textarea>
+                      </div>
+                      
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      
+                      <button type="button" class="btn btn-danger" onclick="submitReturnRequest('<%= order._id %>', '<%= item.productId._id %>', '<%= index %>')">Confirm return</button>
+
+                  </div>
+              </div>
+          </div>
+      </div>
+
+
+  <!-- cancelreturn modal -->
+
+        <div class="modal fade" id="cancelReturnModal<%= index %>" tabindex="-1" role="dialog" aria-labelledby="returnModalLabel<%= index %>" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <h5 class="modal-title" id="cancelReturnModal<%= index %>">Cancel Return</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                      </button>
+                  </div>
+                  <div class="modal-body">
+                      <p>Are you sure you want to cancel Return.If you cancel you cant return this Product anymore  <strong><%= item.productId.productName %></strong>?</p>
+                      
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                      <button type="button" class="btn btn-danger" onclick="cancelReturn('<%= order._id %>', '<%= item.productId._id %>', '<%= index %>')">Confirm Return</button>
+
+                  </div>
+              </div>
+          </div>
+        </div>
+
+
+        
+          <% }); %>
+      </ul>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="order-summary mb-4">
+        <h4>Order Summary</h4>
+        <p><strong>Order Date:</strong> <%= order.createdAt.toLocaleDateString() %></p>
+        <p><strong>Total Price:</strong> ₹<%= order.totalPrice.toFixed(2) %></p>
+        <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+        <p><strong>Payment Method:</strong> <%= order.paymentStatus %></p>
+        <p><strong>Coupon Discount:</strong> <%= order.couponDiscount %></p>
+        <p><strong>Total Discount:</strong> <%= order.totalDiscount %></p>
+        <p><strong>Final Price:</strong> <%= order.finalPrice %></p>
+      </div>
+
+      
+
+      <div class="shipping-address">
+        <h4>Shipping Address</h4>
+        <% if (orderingAddress) { %>
+          <p>
+            <%= orderingAddress.name %><br>
+            <%= orderingAddress.building %>, <%= orderingAddress.addresslane %><br>
+            <%= orderingAddress.city %>, <%= orderingAddress.pincode %><br>
+            <% if (orderingAddress.landMark) { %>Landmark: <%= orderingAddress.landMark %><br><% } %>
+            Phone: <%= orderingAddress.phone %><br>
+            Email: <%= orderingAddress.email %>
+          </p>
+        <% } else { %>
+          <p>No shipping address available for this order.</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+ 
+</div>
+<button class="btn btn-primary" onclick="window.location.href='/download-invoice/<%= order._id %>'">
+  Download Invoice
+</button>
+<%- include('../layouts/user_layouts/userFooter.ejs') %>
+
+
+
+<script>
+
+
+function incrementQuantity(index, maxQuantity) {
+    const quantityInput = document.getElementById(`cancelQuantity${index}`);
+    let currentValue = parseInt(quantityInput.value, 10);
+    if (currentValue < maxQuantity) {
+        quantityInput.value = currentValue + 1;
+    }
+}
+
+function decrementQuantity(index, maxQuantity) {
+    const quantityInput = document.getElementById(`cancelQuantity${index}`);
+    let currentValue = parseInt(quantityInput.value, 10);
+    if (currentValue > 1) {
+        quantityInput.value = currentValue - 1;
+    }
+}
+
+function submitCancellation(orderId, productId, index) {
+    const cancelReason = document.getElementById(`cancelReason${index}`).value; 
+    const cancelQuantity = document.getElementById(`cancelQuantity${index}`).value;
+
+    if (!cancelReason) {
+        alert('Please provide a reason for cancellation.');
+        return;
+    }
+
+    fetch('/order/cancel-product', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            orderId: orderId,
+            productId: productId,
+            cancelReason: cancelReason, 
+            cancelQuantity: cancelQuantity
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            document.getElementById(`cancelForm${index}`).style.display = 'none';
+
+            document.getElementById(`cancelMessage${index}`).style.display = 'block';
+
+            document.getElementById(`messageContent${index}`).textContent = data.message;
+            const confirmButton = document.querySelector(`#cancelModal${index} .btn-danger`);
+            if (confirmButton) {
+                confirmButton.style.display = 'none';
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+function submitReturnRequest(orderId, productId, index) {
+    const returnReason = document.getElementById(`returnReason${index}`).value;
+
+    if (!returnReason) {
+        alert('Please provide a reason for the return.');
+        return;
+    }
+
+    fetch('/order/return-product', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            orderId: orderId,
+            productId: productId,
+            returnReason: returnReason,
+        })
+    })
+    // .then(response => response.json())
+    // .then(data => {
+    //     if (data.message) {
+    //         document.getElementById(`returnModal${index}`).style.display = 'none';
+    //         document.getElementById(`cancelMessage${index}`).textContent = data.message;
+
+    //         const returnButton = document.querySelector(`#returnModal${index} .btn-warning`);
+    //         if (returnButton) {
+    //             returnButton.style.display = 'none';
+    //         }
+    //     }
+    // })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status) {
+            Swal.fire({
+                title: 'Return Requested',
+                text: data.message,
+                icon: 'success',
+                confirmButtonText: 'Okay',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                document.getElementById(`returnModal${index}`).style.display = 'none';
+                document.getElementById(`cancelMessage${index}`).textContent = data.message;
+
+                const returnButton = document.querySelector(`#returnModal${index} .btn-warning`);
+                if (returnButton) {
+                    returnButton.style.display = 'none';
+                }
+            });
+        } else {
+            Swal.fire({
+                title: 'Error',
+                text: data.message || 'Failed to submit return request',
+                icon: 'error',
+                confirmButtonText: 'Try Again'
+            });
+        }
+    })
+     .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'An unexpected error occurred while requesting the return.',
+            icon: 'error',
+            confirmButtonText: 'Try Again'
+        });
+    });
+}
+
+function cancelReturn(orderId, productId, index){
+  console.log("orderId, productId, index",orderId, productId, index);
+  
+  fetch('/order/cancel-return', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        
+        body: JSON.stringify({
+            orderId: orderId,
+            productId: productId,
+        })
+    })
+    .then(response => {
+    if (!response.ok) {
+      throw new Error('Failed to cancel return');
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data.status) {
+      alert('Return cancelled successfully!');
+      location.reload();  // Reloads the page to reflect changes
+    } else {
+      alert(data.message);
+    }
+  })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+
+
+
+
+</script>
+

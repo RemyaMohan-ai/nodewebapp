@@ -1,0 +1,54 @@
+
+<%- include('../layouts/user_layouts/userHeader.ejs') %>
+
+<div class="container"style="margin-top: 150px;">
+
+
+    <h2 class="text-center">Your Account</h2>
+    <div class="row">
+        <div class="account-card-wrapper col-md-6">
+            <div class="account-card">
+                <h5>Your Orders</h5>
+                <p>Track, return, or buy things again</p>
+                <a href="/userprofile/orders">View Orders</a>
+            </div>
+        </div>
+        <div class="account-card-wrapper col-md-6">
+            <div class="account-card">
+                <h5>Login & Security</h5>
+                <p>Edit login, name, and mobile number</p>
+                <a href="/userprofile/editprofile">Edit Login & Security</a>
+            </div>
+        </div>
+        <div class="account-card-wrapper col-md-6">
+            <div class="account-card">
+                <h5>Your Addresses</h5>
+                <p>Edit addresses for orders and gifts</p>
+                <a href="/userprofile/addressbook">Manage Addresses</a>
+            </div>
+        </div>
+        <div class="account-card-wrapper col-md-6">
+            <div class="account-card">
+                <h5>Your Wishlist</h5>
+                <p>View and manage items in your wishlist</p>
+                <a href="/wishlist">View Wishlist</a>
+            </div>
+        </div>
+        <div class="account-card-wrapper col-md-6">
+            <div class="account-card">
+                <h5>Wallet</h5>
+                <p>Manage your payment methods and balance</p>
+                <a href="/userprofile/wallet">Manage Wallet</a>
+            </div>
+        </div>
+        <div class="account-card-wrapper col-md-6">
+            <div class="account-card">
+                <h5>Refer and Earn</h5>
+                <p>Refer friends to get 100 Rs on Wallet</p>
+                <a href="/userprofile/referal">Get Help</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../layouts/user_layouts/userFooter.ejs') %>

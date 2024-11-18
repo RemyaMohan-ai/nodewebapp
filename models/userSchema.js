@@ -32,50 +32,56 @@ const schema = new Schema({
         type:Boolean,
         default:false
     },
-    cart:[
-        {
-            type:Schema.Types.ObjectId,
-            ref:"CArt"
-
-        }
-    ],
+    
     wallet:[
         {
             type:Number,
             default:0
         }
-    ],
-    wishlist:[{
-        type:Schema.Types.ObjectId,
-        ref:"Wishlist"
-    }],
-    orderHistory:[{
-        type:Schema.Types.ObjectId,
-        ref:"Order"
-    }],
+    ], 
+    referralCode:{
+        type: String
+
+        },
+    redeemed:{
+        type:Boolean,
+        default:false
+    },
+
+    balance: {
+        type: Number,
+        required: true,
+        default: 0,
+      },
+      transactions: [
+        {
+          type: {
+            type: String,
+            enum: ['credit', 'debit'],
+            required: true,
+          },
+          amount: {
+            type: Number,
+            required: true,
+          },
+          date: {
+            type: Date,
+            default: Date.now,
+          },
+          description: {
+            type: String,
+            default: '',
+          },
+        },
+      ],
+
+
+
     CreatedOn:{
         type:Date,
         default:Date.now
     }
-
-    // ,
-    // otp:{
-    //     type:String
-    // },
-    // otpCreatedat:{
-    //     type:Date
-    // },
-
-    // otpCreatedat:{
-    //     type:Date
-    // },
-    // blockuntil:{
-    //     type:Date
-    // },
-    // is_admin:{
-    //     type:Number,
-    //     default:0
-    // }
+      
 })
 
 

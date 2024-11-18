@@ -1,0 +1,323 @@
+<%- include('../layouts/admin_layouts/adminHeader.ejs') %>
+
+<div class="main-content">
+    <!-- main-content-wrap -->
+    <div class="main-content-inner">
+        <!-- main-content-wrap -->
+        <div class="main-content-wrap">
+            <div class="tf-section-4 mb-30">
+                <div class="wg-chart-default">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap14">
+                            <div class="image">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="52" viewBox="0 0 48 52" fill="none">
+                                    <path opacity="0.08" d="M19.1086 2.12943C22.2027 0.343099 26.0146 0.343099 29.1086 2.12943L42.4913 9.85592C45.5853 11.6423 47.4913 14.9435 47.4913 18.5162V33.9692C47.4913 37.5418 45.5853 40.8431 42.4913 42.6294L29.1086 50.3559C26.0146 52.1423 22.2027 52.1423 19.1086 50.3559L5.72596 42.6294C2.63194 40.8431 0.725956 37.5418 0.725956 33.9692V18.5162C0.725956 14.9435 2.63195 11.6423 5.72596 9.85592L19.1086 2.12943Z" fill="url(#paint0_linear_53_110)"/>
+                                    <defs>
+                                      <linearGradient id="paint0_linear_53_110" x1="-43.532" y1="-34.3465" x2="37.6769" y2="43.9447" gradientUnits="userSpaceOnUse">
+                                        <stop stop-color="#92BCFF"/>
+                                        <stop offset="1" stop-color="#2377FC"/>
+                                      </linearGradient>
+                                    </defs>
+                                </svg>
+                                <i class="icon-shopping-bag"></i>
+                            </div>
+                            <div>
+                                <div class="body-text mb-2">Total Sales</div>
+                                <h4>34,945</h4>
+                            </div>
+                        </div>
+                        <div class="box-icon-trending up">
+                            <i class="icon-trending-up"></i>
+                            <div class="body-title number">1.56%</div>
+                        </div>
+                    </div>
+                    <div class="wrap-chart">
+                        <div id="line-chart-1"></div>
+                    </div>
+                </div>
+                
+            </div>
+            <!-- <div class=" mb-30">
+                
+
+
+                
+                
+                                
+            </div> -->
+    
+            
+            <div class="tf-section">
+                <!-- Sales Report Section -->
+                <div class="wg-box">
+                    <div class="flex items-center justify-between">
+                        <h5>Sales Report</h5>
+                        <div class="download-buttons">
+                            <!-- <a href="/admin/download/report/pdf" class="btn btn-primary">Download PDF</a> -->
+                            <a class="tf-button style-1 w208" href="/admin/download/report/pdf"><i class="icon-file-text"></i>Download PDF</a>
+                            <a class="tf-button style-1 w208" href="/admin/download/report/excel"><i class="icon-file-text"></i>Download Excel</a>
+                            <!-- <a href="/admin/download/report/excel" class="btn btn-primary">Download Excel</a> -->
+                        
+                        </div>
+                        <div class="dropdown default">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="icon-more"><i class="icon-more-horizontal"></i></span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a href="?filter=day">Today</a></li>
+                                <li><a href="?filter=week">This Week</a></li>
+                                <li><a href="?filter=lastWeek">Last Week</a></li>
+                                <li><a href="?filter=month">This Month</a></li>
+                                <li><a href="?filter=year">This Year</a></li>
+                                <li>
+                                    <form id="customDateFilterForm">
+                                        <label for="startDate">Start Date:</label>
+                                        <input type="date" id="startDate" name="startDate" max="">
+                                        
+                                        <label for="endDate">End Date:</label>
+                                        <input type="date" id="endDate" name="endDate" max="">
+                                        
+                                        <button type="button" onclick="submitCustomDateFilter()">Filter</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>                        
+                    </div>
+                    <div class="wg-table table-product-overview t1">
+                        <!-- Table Headers with Fixed Widths -->
+                        <ul class="table-title flex mb-14">
+                            <li style="width: 12%;"><div class="body-title">Order ID</div></li>
+                            <li style="width: 15%;"><div class="body-title">Customer</div></li>
+                            <li style="width: 10%;"><div class="body-title">Quantity</div></li>
+                            <li style="width: 12%;"><div class="body-title">Total Price</div></li>
+                            <li style="width: 12%;"><div class="body-title">Product Offer</div></li>
+                            <li style="width: 12%;"><div class="body-title">Coupon Offer</div></li>
+                            <li style="width: 12%;"><div class="body-title">Total Discount</div></li>
+                            <li style="width: 12%;"><div class="body-title">Final Price</div></li>
+                            <li style="width: 15%;"><div class="body-title">Date</div></li>
+                            
+                        </ul>
+                        <div class="divider mb-14"></div>
+                        <% if (salesData && salesData.length > 0) { %>
+                            <ul class="flex flex-column gap10">
+                                <% salesData.forEach(order => { %>
+                                    <li class="product-item">
+                                        <div class="flex items-center justify-between flex-grow">
+                                            <div class="body-text" style="width: 12%;"><%= order.orderId || 'N/A' %></div>
+                                            <div class="body-text" style="width: 15%;"><%= order.customer %></div>
+                                            <div class="body-text" style="width: 10%;"><%= order.quantity %></div>
+                                            <div class="body-text" style="width: 12%;">₹<%= order.totalPrice %></div>
+                                            <div class="body-text" style="width: 12%;"><%= order.productOffer %></div>
+                                            <div class="body-text" style="width: 12%;"><%= order.couponOffer %></div>
+                                            <div class="body-text" style="width: 12%;">₹<%= order.totalDiscount || "0" %></div>
+                                            <div class="body-text" style="width: 12%;">₹<%= order.finalPrice %></div>
+                                            <div class="body-text" style="width: 15%;"><%= new Date(order.deliveryDate).toLocaleDateString() %></div>
+                                            
+                                        </div>
+                                    </li>
+                                    <li class="divider"></li>
+                                <% }) %>
+                            </ul>
+                        <% } else { %>
+                            <div class="no-sales-message">
+                                <p>No sales done</p>
+                            </div>
+                        <% } %>
+                    </div>
+                    <div class="flex items-center justify-between flex-wrap gap10">
+                        <ul class="wg-pagination">
+                            <% if (currentPage > 1) { %>
+                                <li>
+                                    <a href="?page=<%= currentPage - 1 %>">
+                                        <i class="icon-chevron-left"></i>
+                                    </a>
+                                </li>
+                            <% } %>
+                    
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                                <li class="<%= currentPage == i ? 'active' : '' %>" >
+                                    <a href="?page=<%= i %>"><%= i %></a>
+                                </li>
+                            <% } %>
+                    
+                            <% if (currentPage < totalPages) { %>
+                                <li>
+                                    <a href="?page=<%= currentPage + 1 %>">
+                                        <i class="icon-chevron-right"></i>
+                                    </a>
+                                </li>
+                            <% } %>
+                        </ul>
+                        
+                        
+
+                        
+                    
+                    </div>
+
+                </div>
+            </div>
+            
+            
+
+
+            <div class="tf-section">
+                <!-- product-overview -->
+                <div class="wg-box">
+                    <div class="flex items-center justify-between">
+                        <h5>Top Selling Product</h5>
+                        
+                    </div>
+                        <div class="wg-table table-product-overview">
+                            <ul class="table-title flex mb-14">
+                                <li style="width: 12%;"><div class="body-title">Product Name</div></li>
+                                <li style="width: 10%;"><div class="body-title">Quantity</div></li>
+                                <li style="width: 10%;"><div class="body-title">Sales Price</div></li>
+                                <li style="width: 10%;"><div class="body-title">Product Offer</div></li>
+                                <li style="width: 12%;"><div class="body-title">Revenue</div></li>
+                            </ul>
+                            <div class="divider mb-14"></div>
+                            <% if (bestSellingProducts && bestSellingProducts.length > 0) { %>
+                                <ul class="flex flex-column gap10">
+                                    <% bestSellingProducts.forEach(product => { %>
+                                        <li class="product-item">
+                                            <div class="flex items-center justify-between flex-grow">
+                                               
+                                                <div class="body-text" style="width: 12%;"><%= product.productName%></div>
+                                                <div class="body-text" style="width: 10%;"><%= product.totalSold %></div>
+                                                <div class="body-text" style="width: 10%;"><%= product.productPrice %></div>
+                                                <div class="body-text" style="width: 10%;"><%= product.productOffer %></div>
+                                                <div class="body-text" style="width: 12%;">₹<%= product.totalRevenue %></div>
+                                            </div>
+                                        </li>
+                                        <li class="divider"></li>
+                                    <% }) %>
+                                </ul>
+                            <% } else { %>
+                                <div class="no-sales-message">
+                                    <p>No sales done</p>
+                                </div>
+                            <% } %>
+                        </div>
+                    <div class="divider"></div>
+                    
+                </div>
+                
+                
+            </div>
+
+
+            <div class="tf-section">
+                <!-- product-overview -->
+                <div class="wg-box">
+                    <div class="flex items-center justify-between">
+                        <h5>Top Selling Category</h5>
+                        
+                    </div>
+                    <div class="wg-table table-product-overview">
+                        <ul class="table-title flex mb-14">
+                            <li style="width: 12%;"><div class="body-title">Category Name</div></li>
+                            <li style="width: 10%;"><div class="body-title">Quantity</div></li>
+                            <li style="width: 12%;"><div class="body-title">Revenue</div></li>
+                        </ul>
+                        <div class="divider mb-14"></div>
+                        <% if (bestSellingCategories && bestSellingCategories.length > 0) { %>
+                            <ul class="flex flex-column gap10">
+                                <% bestSellingCategories.forEach(category => { %>
+                                    <li class="product-item gap14">
+                                        <div class="flex items-center justify-between flex-grow gap20">
+                                            <div class="body-text" style="width: 12%;"><%= category._id || 'N/A' %></div>
+                                            <div class="body-text" style="width: 10%;"><%= category.totalSold || 0 %></div>
+                                            <div class="body-text" style="width: 12%;">₹<%= category.totalRevenue|| 0 %></div>
+
+                                        </div>
+                                    </li>
+                                    <li class="divider"></li>
+                                <% }) %>
+                            </ul>
+                        <% } else { %>
+                            <div class="no-sales-message">
+                                <p>No sales done</p>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+                
+                <!-- /product-overview -->
+            </div>
+
+
+            <div class="tf-section">
+                <div class="wg-box">
+                    <div class="flex items-center justify-between">
+                        <h5>Top Selling Brand</h5>
+                        
+                    </div>
+                    <div class="wg-table table-product-overview">
+                        <ul class="table-title flex mb-14">
+                            <li style="width: 12%;"><div class="body-title">Brand Name</div></li>
+                            <li style="width: 10%;"><div class="body-title">Quantity</div></li>
+                            <li style="width: 12%;"><div class="body-title">Revenue</div></li>
+                        </ul>
+                        <div class="divider mb-14"></div>
+                        <% if (bestSellingBrands && bestSellingBrands.length > 0) { %>
+                            <ul class="flex flex-column gap10">
+                                <% bestSellingBrands.forEach(brands => { %>
+                                    <li class="product-item gap14">
+                                        <div class="flex items-center justify-between flex-grow gap20">
+                                            <div class="body-text" style="width: 12%;"><%= brands._id || 'N/A' %></div>
+                                            <div class="body-text" style="width: 10%;"><%= brands.totalSold || 0 %></div>
+                                            <div class="body-text" style="width: 12%;">₹<%= brands.totalRevenue|| 0 %></div>
+
+                                        </div>
+                                    </li>
+                                    <li class="divider"></li>
+                                <% }) %>
+                            </ul>
+                        <% } else { %>
+                            <div class="no-sales-message">
+                                <p>No sales done</p>
+                            </div>
+                        <% } %>
+                    </div>
+                <!-- /product-overview -->
+            </div>
+
+
+        </div>
+        <!-- /main-content-wrap -->
+    </div>
+    <!-- /main-content-wrap -->
+    <!-- bottom-page -->
+    <div class="bottom-page">
+        <div class="body-text">Copyright © 2024 Remos. Design with</div>
+        <i class="icon-heart"></i>
+        <div class="body-text">by <a href="https://themeforest.net/user/themesflat/portfolio">Themesflat</a> All rights reserved.</div>
+    </div>
+    <!-- /bottom-page -->
+</div>
+
+
+
+
+<script>
+    const today = new Date().toISOString().split("T")[0];
+    document.getElementById("startDate").setAttribute("max", today);
+    document.getElementById("endDate").setAttribute("max", today);
+
+
+
+    function submitCustomDateFilter() {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        if (startDate && endDate) {
+            window.location.href = `/admin/?startDate=${startDate}&endDate=${endDate}`;
+        } else {
+            alert("Please select both start and end dates.");
+        }
+    }
+</script>
+
+
+<%- include('../layouts/admin_layouts/adminFooter.ejs') %>

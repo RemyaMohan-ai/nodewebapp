@@ -1,0 +1,275 @@
+<%- include('../layouts/admin_layouts/adminHeader.ejs') %>
+ 
+<div class="main-content">
+    <div class="main-content-inner">
+        <div class="main-content-wrap">
+            <h3>Edit Product</h3>
+            
+            <form id="addProductForm" action="/admin/productedit/?id=<%= product._id %>" method="POST" enctype="multipart/form-data" class=" tf-section-2 form-add-product">
+
+              
+
+                <div class="wg-box">
+                    <fieldset class="name">
+                        <div class="body-title mb-10">Product name <span class="tf-color-1">*</span></div>
+                        <input class="mb-10" type="text" placeholder="Enter product name" name="productName" tabindex="0" value="<%= product.productName %>" aria-required="true" required="">
+                        <div id="productName-error" class="error"></div>
+                        <div class="text-tiny"></div>
+                    </fieldset>
+                    <div class="gap22 cols">
+                     <!-- <fieldset class="category">
+                            <div class="body-title mb-10">Category <span class="tf-color-1">*</span></div>
+                             <select class="mb-10" name="category" tabindex="0" aria-required="true">
+                                <option value="" disabled selected>Select a category</option>
+                                <% categories.forEach(category => { %>
+                                    <option value="<%= category.name %>">
+                                        <%= category.name %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                            <div id="category-error" class="error"></div>
+
+                            
+                     </fieldset> -->
+                        
+                     <fieldset class="category">
+                        <div class="body-title mb-10">Category <span class="tf-color-1">*</span></div>
+                        <select class="mb-10" name="category" tabindex="0" aria-required="true">
+                            <option value="" disabled>Select a category</option>
+                            <% categories.forEach(category => { %>
+                                <option value="<%= category.name %>" <%= category.name == product.category ? 'selected' : '' %>>
+                                    <%= category.name %>
+                                </option>
+                            <% }); %>
+                        </select>
+                        <div id="category-error" class="error"></div>
+                    </fieldset>
+                    
+                     
+                     <fieldset class="brand">
+                            <div class="body-title mb-10">Brand <span class="tf-color-1">*</span></div>
+                            <input class="mb-10" type="text" placeholder="Enter product brand" name="brand" tabindex="0" value="<%= product.brand %>" aria-required="true" required="">
+                            <div id="brand-error" class="error"></div>
+
+                          
+                        </fieldset>
+                    </div>
+                    <div class="gap22 cols">
+                        <fieldset class="color">
+                            <div class="body-title mb-10">Color <span class="tf-color-1">*</span></div>
+                            <input class="mb-10" type="text" placeholder="Enter product color" name="color" tabindex="0" value="<%= product.color %>" aria-required="true" required="">
+                            <div id="color-error" class="error"></div>
+
+                           
+                        </fieldset>
+                        <fieldset class="material">
+                            <div class="body-title mb-10">Material <span class="tf-color-1">*</span></div>
+                            <input class="mb-10" type="text" placeholder="Enter product material" name="material" tabindex="0" value="<%= product.material%>" aria-required="true" required="">
+                            <div id="material-error" class="error"></div>
+
+                           
+                        </fieldset>
+                    </div>
+
+                    <div class="gap22 cols">
+                        <fieldset class="price">
+                            <div class="body-title mb-10">Price <span class="tf-color-1">*</span></div>
+                            <input class="mb-10" type="text" placeholder="Enter product price" name="price" tabindex="0" value="<%= product.price %>" aria-required="true" required="">
+                            <div id="price-error" class="error"></div>
+
+                        </fieldset>
+                        <fieldset class="salePrice">
+                            <div class="body-title mb-10">Sale Price <span class="tf-color-1">*</span></div>
+                            <input class="mb-10" type="text" placeholder="Enter product sale price" name="salePrice" tabindex="0" value="<%= product.salePrice %>" aria-required="true" required="">
+                            <div id="salePrice-error" class="error"></div>
+
+                           
+                        </fieldset>
+                    </div>
+
+                    <div class="gap22 cols">
+                        <fieldset class="stock">
+                            <div class="body-title mb-10">Stock <span class="tf-color-1">*</span></div>
+                            <input class="mb-10" type="text" placeholder="Enter product price" name="stock" tabindex="0" value="<%= product.stock %>" aria-required="true" required="">
+                            <div id="stock-error" class="error"></div>
+  
+                        </fieldset>
+                        <fieldset class="status">
+                            <div class="body-title mb-10">Status <span class="tf-color-1">*</span></div>
+                            <select class="mb-10" name="status" tabindex="0" aria-required="true">
+                                <option value="" disabled>Select a status</option>
+                                <option value="Available" selected>Available</option>
+                                <option value="out-of-stock">Out of Stock</option>
+                                <option value="discontinued">Unavailable</option>
+                            </select>
+                            <div id="status-error" class="error"></div>
+
+                           
+                        </fieldset>
+                    </div>
+
+                    <fieldset class="description">
+                        <div class="body-title mb-10">Description <span class="tf-color-1">*</span></div>
+                        <textarea class="mb-10" name="description" placeholder="Description" tabindex="0" aria-required="true" required=""><%= product.description %></textarea>
+                        <div id="description-error" class="error"></div>
+
+                        <div class="text-tiny"></div>
+                    </fieldset>
+                </div>
+                
+
+
+                <div class="wg-box">
+                    <fieldset>
+                        <div class="body-title mb-10">Upload images</div>
+                        <div class="upload-image mb-16">
+                            
+                
+                            <div id="existingImagePreview" class="image-preview">
+                                <% product.productImage.forEach((image, index) => { %>
+                                    <div class="existing-image-item">
+                                        <img src="/productimages/<%= image %>" alt="Product Image <%= index + 1 %>" style="max-width: 100px; margin: 10px;">
+                <div>
+                                        
+                
+                                        <!-- Optional: You can also add a remove button for existing images -->
+                                        <button type="button" onclick="removeExistingImage('<%= image %>')">Remove</button>
+                </div>
+                                    </div>
+                                <% }) %>
+                            </div>
+                
+                
+                            
+                            <div class="item up-load">
+                                <input type="file" name="productImage" id="productImage" multiple accept="image/*">
+                            </div>
+                            <div id="imagePreview" class="image-preview"></div>
+                        </div>
+                
+                        
+                        <div class="body-text"></div>
+                        
+                    </fieldset>
+                    <div id="image-error" class="error"></div>
+                </div>
+
+
+              
+                <div class="cols gap10">
+                        <button class="tf-button style-1 w-full" type="submit">Save product</button>
+                </div>
+                
+                
+                
+                
+            </form>
+                
+</div>
+<!-- /main-content-wrap -->
+</div>
+
+
+
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Handle form submission
+    document.getElementById('addProductForm').addEventListener('submit', handleProductForm);
+
+    function handleProductForm(event) {
+        event.preventDefault(); // Prevent default form submission
+        if (validateProductForm()) {
+            event.target.submit();
+        }
+    }
+
+    function validateProductForm() {
+        const fields = [
+            'productName', 'category', 'brand', 'color', 'material', 
+            'price', 'salePrice', 'stock', 'status', 'description'
+        ];
+        let isValid = true;
+
+        fields.forEach(field => {
+            const value = document.getElementsByName(field)[0].value.trim();
+            if (value === '') {
+                displayErrorMessage(`${field}-error`, `${field} is required.`);
+                isValid = false;
+            }
+        });
+
+        // Additional validation for numeric fields
+        ['price', 'salePrice', 'stock'].forEach(field => {
+            const value = document.getElementsByName(field)[0].value.trim();
+            if (value !== '' && isNaN(value)) {
+                displayErrorMessage(`${field}-error`, `${field.charAt(0).toUpperCase() + field.slice(1)} must be a number.`);
+                isValid = false;
+            }
+        });
+
+        // Validate file upload
+        // const fileInput = document.getElementById('productImage');
+        // if (fileInput.files.length < 3) {
+        //     displayErrorMessage('image-error', 'Please select at least 3 product images.');
+        //     isValid = false;
+        // }
+        return isValid;
+    }
+
+    function displayErrorMessage(elementId, message) {
+        const errorElement = document.getElementById(elementId);
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.style.color = 'red';
+        } else {
+            console.error(`Element with ID ${elementId} not found.`);
+        }
+    }
+
+    // Handle image file changes
+    const productImageInput = document.getElementById('productImage');
+    if (productImageInput) {
+        productImageInput.addEventListener('change', function(event) {
+            const files = event.target.files;
+            const imagePreview = document.getElementById('imagePreview');
+            imagePreview.innerHTML = ''; // Clear previous previews
+            const cropperContainers = [];
+
+            Array.from(files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = e.target.result;
+                    imgElement.style.maxWidth = '100%';
+                    imagePreview.appendChild(imgElement);
+                    
+                    const cropperContainer = document.createElement('div');
+                    cropperContainer.classList.add('cropper-container');
+                    imagePreview.appendChild(cropperContainer);
+                    cropperContainer.appendChild(imgElement);
+                    cropperContainers.push(cropperContainer);
+
+                    new Cropper(imgElement, {
+                        aspectRatio: 1, // Adjust the aspect ratio as needed
+                        viewMode: 2
+                    });
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    }
+});
+
+
+function removeExistingImage(image) {
+    const confirmation = confirm("Are you sure you want to remove this image?");
+    if (confirmation) {
+        // Remove the image preview (you can also make an API call to remove it from the server)
+        document.querySelector(`[src="/productimages/${image}"]`).parentElement.remove();
+    }
+}
+
+</script>
+
+<%- include('../layouts/admin_layouts/adminFooter.ejs') %>

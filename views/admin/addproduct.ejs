@@ -1,6 +1,7 @@
 <%- include('../layouts/admin_layouts/adminHeader.ejs') %>
 
 
+
 <div class="main-content">
     <!-- main-content-wrap -->
     <div class="main-content-inner">
@@ -27,124 +28,104 @@
                 </ul>
             </div>
             <!-- form-add-product -->
-            <form method="post" action="/admin/addproduct" enctype="multipart/form-data"  class="tf-section-2 form-add-product">
+            <form id="addProductForm" method="post" action="/admin/addproduct" enctype="multipart/form-data"  class="tf-section-2 form-add-product">
+               
                 <div class="wg-box">
+
+                    <% if (message&&typeof message !== 'undefined') { %>
+                        <div style="color: red;"><%= message %></div>
+                    <% } %>
                     <fieldset class="name">
                         <div class="body-title mb-10">Product name <span class="tf-color-1">*</span></div>
-                        <input class="mb-10" type="text" placeholder="Enter product name" name="productName" tabindex="0" value="" aria-required="true" required="">
+                        <input class="mb-10" type="text" placeholder="Enter product name" name="productName" tabindex="0" value="" aria-required="true" >
+                        <div id="productName-error" class="error"></div>
                         <div class="text-tiny"></div>
                     </fieldset>
                     <div class="gap22 cols">
+                        
                         <fieldset class="category">
                             <div class="body-title mb-10">Category <span class="tf-color-1">*</span></div>
-                            <input class="mb-10" type="text" placeholder="Enter product category" name="category" tabindex="0" value="" aria-required="true" required="">
-
-                            <!-- <div class="select">
-                                <select class="">
-                                    <option>Choose category</option>
-                                    <option>Shop</option>
-                                    <option>Product</option>
-                                </select>
-                            </div> -->
+                            <select class="mb-10" name="category" tabindex="0" aria-required="true">
+                                <option value="" disabled selected>Select a category</option>
+                                <% categories.forEach(category => { %>
+                                    <option value="<%= category.name %>"><%= category.name %></option>
+                                <% }); %>
+                            </select>
+                            
                         </fieldset>
+                        
+                        
+                        
+                        
                         <fieldset class="brand">
                             <div class="body-title mb-10">Brand <span class="tf-color-1">*</span></div>
-                            <input class="mb-10" type="text" placeholder="Enter product brand" name="brand" tabindex="0" value="" aria-required="true" required="">
+                            <input class="mb-10" type="text" placeholder="Enter product brand" name="brand" tabindex="0" value="" aria-required="true" >
+                            <div id="brand-error" class="error"></div>
 
-                            <!-- <div class="select">
-                                <select class="">
-                                    <option>Male</option>
-                                    <option>Female</option>
-                                    <option>Other</option>
-                                </select>
-                            </div> -->
+                           
                         </fieldset>
                     </div>
                     <div class="gap22 cols">
                         <fieldset class="color">
                             <div class="body-title mb-10">Color <span class="tf-color-1">*</span></div>
-                            <input class="mb-10" type="text" placeholder="Enter product color" name="color" tabindex="0" value="" aria-required="true" required="">
+                            <input class="mb-10" type="text" placeholder="Enter product color" name="color" tabindex="0" value="" aria-required="true">
+                            <div id="color-error" class="error"></div>
 
-                            <!-- <div class="select">
-                                <select class="">
-                                    <option>Choose category</option>
-                                    <option>Shop</option>
-                                    <option>Product</option>
-                                </select>
-                            </div> -->
+                            
                         </fieldset>
                         <fieldset class="material">
                             <div class="body-title mb-10">Material <span class="tf-color-1">*</span></div>
-                            <input class="mb-10" type="text" placeholder="Enter product material" name="material" tabindex="0" value="" aria-required="true" required="">
+                            <input class="mb-10" type="text" placeholder="Enter product material" name="material" tabindex="0" value="" aria-required="true" >
+                            <div id="material-error" class="error"></div>
 
-                            <!-- <div class="select">
-                                <select class="">
-                                    <option>Male</option>
-                                    <option>Female</option>
-                                    <option>Other</option>
-                                </select>
-                            </div> -->
+                            
                         </fieldset>
                     </div>
 
                     <div class="gap22 cols">
                         <fieldset class="price">
                             <div class="body-title mb-10">Price <span class="tf-color-1">*</span></div>
-                            <input class="mb-10" type="text" placeholder="Enter product price" name="price" tabindex="0" value="" aria-required="true" required="">
+                            <input class="mb-10" type="text" placeholder="Enter product price" name="price" tabindex="0" value="" aria-required="true">
+                            <div id="price-error" class="error"></div>
 
-                            <!-- <div class="select">
-                                <select class="">
-                                    <option>Choose category</option>
-                                    <option>Shop</option>
-                                    <option>Product</option>
-                                </select>
-                            </div> -->
+                           
                         </fieldset>
                         <fieldset class="salePrice">
                             <div class="body-title mb-10">Sale Price <span class="tf-color-1">*</span></div>
-                            <input class="mb-10" type="text" placeholder="Enter product sale price" name="salePrice" tabindex="0" value="" aria-required="true" required="">
+                            <input class="mb-10" type="text" placeholder="Enter product sale price" name="salePrice" tabindex="0" value="" aria-required="true">
+                            <div id="salePrice-error" class="error"></div>
 
-                            <!-- <div class="select">
-                                <select class="">
-                                    <option>Male</option>
-                                    <option>Female</option>
-                                    <option>Other</option>
-                                </select>
-                            </div> -->
+                          
                         </fieldset>
                     </div>
 
                     <div class="gap22 cols">
                         <fieldset class="stock">
                             <div class="body-title mb-10">Stock <span class="tf-color-1">*</span></div>
-                            <input class="mb-10" type="text" placeholder="Enter product price" name="stock" tabindex="0" value="" aria-required="true" required="">
+                            <input class="mb-10" type="text" placeholder="Enter product price" name="stock" tabindex="0" value="" aria-required="true">
+                            <div id="stock-error" class="error"></div>
 
-                            <!-- <div class="select">
-                                <select class="">
-                                    <option>Choose category</option>
-                                    <option>Shop</option>
-                                    <option>Product</option>
-                                </select>
-                            </div> -->
+                           
                         </fieldset>
                         <fieldset class="status">
                             <div class="body-title mb-10">Status <span class="tf-color-1">*</span></div>
-                            <input class="mb-10" type="text" placeholder="Enter product sale price" name="status" tabindex="0" value="" aria-required="true" required="">
-
-                            <!-- <div class="select">
-                                <select class="">
-                                    <option>Male</option>
-                                    <option>Female</option>
-                                    <option>Other</option>
-                                </select>
-                            </div> -->
+                            <select class="mb-10" name="status" tabindex="0" aria-required="true">
+                                <option value="" disabled selected>Select a status</option>
+                                <option value="Available">Available</option>
+                                <option value="out-of-stock">Out of Stock</option>
+                                <option value="discontinued">Unavailable</option>
+                            </select>
+                            <div id="status-error" class="error"></div>
                         </fieldset>
+                        
                     </div>
 
                     <fieldset class="description">
                         <div class="body-title mb-10">Description <span class="tf-color-1">*</span></div>
-                        <textarea class="mb-10" name="description" placeholder="Description" tabindex="0" aria-required="true" required=""></textarea>
+                        <textarea class="mb-10" name="description" placeholder="Description" tabindex="0" aria-required="true"></textarea>
                         <div class="text-tiny"></div>
+                        <div id="description-error" class="error"></div>
+
                     </fieldset>
                 </div>
                 
@@ -154,54 +135,153 @@
                         <div class="upload-image mb-16">
                             
                             <div class="item up-load">
-                                
-                                <input type="file" name="productImage" id="">
-                                
+                                <input type="file" name="productImage" id="productImage" multiple accept="image/*">
                             </div>
-
-                            <div class="item up-load">
-                                <input type="file" name="productImage" id="">
-                            </div>
-
-                            <div class="item up-load">
-                                <input type="file" name="productImage" id="">
-                            </div>
-
-                            <div class="item up-load">
-                                <label class="uploadfile" for="myFile">
-                                    <span class="icon">
-                                        <i class="icon-upload-cloud"></i>
-                                    </span>
-                                    <span class="text-tiny">Drop your images here or select <span class="tf-color">click to browse</span></span>
-                                    <input type="file" id="myFile" name="productImage">
-                                </label>
-                            </div>
+                            <div id="imagePreview" class="image-preview"></div> 
                         </div>
+
+                        
                         <div class="body-text"></div>
+                        <div id="image-error" class="error"></div>
                     </fieldset>
-                    <div class="cols gap10">
+                    
+                </div>
+                <div class="cols gap10">
                         <button class="tf-button style-1 w-full" type="submit">Save product</button>
                     </div>
-                </div>
+            
+
+            
+            
             </form>
-            <!-- /form-add-product -->
-            <% if(typeof message!=="undefined"){%>
-                <p><% message%></p>
-                
-            <%}%>
+
+
+            
            
         </div>
         <!-- /main-content-wrap -->
     </div>
     <!-- /main-content-wrap -->
-    <!-- bottom-page -->
-    <div class="bottom-page">
-        <div class="body-text">Copyright © 2024 Remos. Design with</div>
-        <i class="icon-heart"></i>
-        <div class="body-text">by <a href="https://themeforest.net/user/themesflat/portfolio">Themesflat</a> All rights reserved.</div>
-    </div>
-    <!-- /bottom-page -->
+   
+  
 </div>
+<script>
 
+document.getElementById('addProductForm').addEventListener('submit', handleProductForm);
+
+
+function handleProductForm(event) {
+    event.preventDefault(); // Prevent default form submission
+
+    if (validateProductForm()) {
+        event.target.submit();
+    }
+    
+}
+
+    
+
+function validateProductForm() {
+    const fields = [
+        'productName', 'category', 'brand', 'color', 'material', 
+        'price', 'salePrice', 'stock', 'status', 'description'
+    ];
+    let isValid = true;
+
+    fields.forEach(field => {
+        const value = document.getElementsByName(field)[0].value.trim();
+        if (value === '') {
+            displayErrorMessage(`${field}-error`, `${field} is required.`);
+            isValid = false;
+        }
+    });
+
+    ['price', 'salePrice', 'stock'].forEach(field => {
+        const value = document.getElementsByName(field)[0].value.trim();
+        if (value !== '') {
+            if (isNaN(value)) {
+                displayErrorMessage(`${field}-error`, `${field.charAt(0).toUpperCase() + field.slice(1)} must be a number.`);
+                isValid = false;
+            } else if (Number(value) < 0) {
+                displayErrorMessage(`${field}-error`, `${field.charAt(0).toUpperCase() + field.slice(1)} cannot be negative.`);
+                isValid = false;
+            }
+        }
+
+    });
+
+    const fileInput = document.getElementById('productImage');
+    if (fileInput.files.length < 3) {
+        displayErrorMessage('image-error', 'Please select at least 3 product images.');
+        isValid = false;
+    }
+    return isValid;
+}
+
+function displayErrorMessage(elementId, message) {
+    let errorElement = document.getElementById(elementId);
+    
+    errorElement.textContent = message;
+    errorElement.style.color = 'red';
+}
+
+
+document.getElementById('productImage').addEventListener('change', function(event) {
+    const files = event.target.files;
+    const imagePreview = document.getElementById('imagePreview');
+    imagePreview.innerHTML = ''; // Clear previous previews
+    const cropperContainers = [];
+
+    Array.from(files).forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imgElement = document.createElement('img');
+            imgElement.src = e.target.result;
+            imgElement.style.maxWidth = '100%';
+            imagePreview.appendChild(imgElement);
+            
+            const cropperContainer = document.createElement('div');
+            cropperContainer.classList.add('cropper-container');
+            imagePreview.appendChild(cropperContainer);
+            cropperContainer.appendChild(imgElement);
+            cropperContainers.push(cropperContainer);
+
+            new Cropper(imgElement, {
+                aspectRatio: 1, // Adjust the aspect ratio as needed
+                viewMode: 2
+            });
+        };
+        reader.readAsDataURL(file);
+    });
+
+    document.getElementById('cropButton').addEventListener('click', function() {
+        cropperContainers.forEach(container => {
+            const cropper = Cropper.getCropperInstance(container.querySelector('img'));
+            cropper.getCroppedCanvas().toBlob(function(blob) {
+                const formData = new FormData();
+                formData.append('croppedImage', blob);
+
+                // Use fetch or XMLHttpRequest to upload the cropped image to your server
+                fetch('/your-upload-endpoint', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Upload successful:', data);
+                    // Redirect or update UI after successful upload
+                })
+                .catch(error => {
+                    console.error('Upload failed:', error);
+                });
+            });
+        });
+    });
+});
+
+
+
+
+</script>
 
 <%- include('../layouts/admin_layouts/adminFooter.ejs') %>

@@ -1,6 +1,36 @@
 
 <%- include('../layouts/admin_layouts/adminHeader.ejs') %>
 
+<style>
+
+.pagination-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.pagination-link {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    margin: 0 5px;
+    text-decoration: none;
+    color: #333;
+}
+
+.pagination-link.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.pagination-link:hover {
+    background-color: #f1f1f1;
+}
+
+</style>
+
+
+
+
 <div class="main-content">
     <!-- main-content-wrap -->
     <div class="main-content-inner">
@@ -26,8 +56,8 @@
                     </li>
                 </ul>
             </div>
-            <!-- product-list -->
-              <div class="wg-box">
+
+            <div class="wg-box">
                
                 <div class="flex items-center justify-between gap10 flex-wrap">
                     <div class="wg-filter flex-grow">
@@ -40,82 +70,213 @@
                             </div>
                         </form>
                     </div>
-                    <a class="tf-button style-1 w208" href="add-product.html"><i class="icon-plus"></i>Add new</a>
+                    <a class="tf-button style-1 w208" href="/admin/addproduct"><i class="icon-plus"></i>Add new</a>
                 </div>
                 <div class="wg-table table-product-list">
                     <ul class="table-title flex gap20 mb-14">
                         <li><div class="body-title">Product</div></li>
-                        <!-- <li><div class="body-title">Product ID</div></li> -->
                         <li><div class="body-title">Category</div></li>
                         <li><div class="body-title">Brand</div></li>
                         <li><div class="body-title">Price</div></li>
-                        <!-- <li><div class="body-title">Quantity</div></li> -->
                         <li><div class="body-title">Sale Price</div></li>
                         <li><div class="body-title">Stock</div></li>
                         <li><div class="body-title">Status</div></li>
+                        <li><div class="body-title">Offer Price </div></li>
+                        <li><div class="body-title">Offer </div></li>
                         <li><div class="body-title">Action</div></li>
                     </ul>
                 
                     <ul class="flex flex-column">
                         <% products.forEach(product => { %>
                         <li class="product-item gap14">
-                            <div class="image no-bg">
-                                <img src="/uploads/<%= product.productImage[1] %>" alt="">
+                            <div class="image">
+                                <img src="/productimages/<%= product.productImage[1] %>" alt="<%= product.productName %>">
                             </div>
                             <div class="flex items-center justify-between gap20 flex-grow">
                                 <div class="name">
-                                    <a href="/admin/product/<%= product._id %>" class="body-title-2"><%= product.productName %></a>
+                                    <a href="/admin/editproduct/<%= product._id %>" class="body-title-2"><%= product.productName %></a>
                                 </div>
                                 <!-- <div class="body-text">#<%= product._id %></div> -->
                                 <div class="body-text"><%= product.category %></div>
                                 <div class="body-text"><%= product.brand %></div>
-                                <div class="body-text">$<%= product.price %></div>
+                                <div class="body-text">₹<%= product.price %></div>
                                 <div class="body-text"><%= product.salePrice %></div>
                                 <div class="body-text"><%= product.stock %></div>
                                 <div class="body-text"><%= product.status ? 'Available' : 'Out of stock' %></div>
+                                <div class="body-text"><%= product.productOffer ? product.productOffer : 0 %></div>
+
+                                <div class="body-text">
+                                    <% if (product.productOffer==0) { %>
+
+                                    <button class="btn btn-info" onclick="addOffer('<%=  product._id %>')">Add Offer</button>
+
+                                        <a  class="text-white">Add Offer </a>
+                                    </button>
+                                    <%}else{%>
+                                        <button class="btn btn-info" onclick="removeOffer('<%=  product._id %>')"  >
+                                            <a  class="text-white">Remove Offer </a>
+                                        </button>
+                                    <%}%>
+                                    
+                                </div>
+
+
                                 <div class="list-icon-function">
-                                    <a href="/admin/product/edit/<%= product._id %>" class="item edit"><i class="icon-edit-3"></i></a>
-                                    <a href="/admin/product/delete/<%= product._id %>" class="item trash"><i class="icon-trash-2"></i></a>
+                                    <a href="/admin/productedit/?id=<%= product._id %>" class="item edit"><i class="icon-edit-3"></i></a>
+                                    <% if (product.isDeleted) { %>
+                                        <a href="/admin/listingproducts?id=<%= product._id %>" class="btn btn-sm btn-outline-warning me-2">Unlisted</a>
+                                    <% } else { %>
+                                        <a href="/admin/listingproducts?id=<%= product._id %>" class="btn btn-sm btn-outline-warning me-2">Listed</a>
+                                    <% } %>                               
                                 </div>
                             </div>
                         </li>
                         <% }); %>
                     </ul>
+
+                    <div class="pagination">
+                        <ul class="pagination-list flex items-center justify-center gap10">
+                            <% if (currentPage > 1) { %>
+                                <li><a href="/admin/productlist?page=<%= currentPage - 1 %>" class="pagination-link">Previous</a></li>
+                            <% } %>
+                
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                                <li>
+                                    <a href="/admin/productlist?page=<%= i %>" class="pagination-link <%= currentPage === i ? 'active' : '' %>">
+                                        <%= i %>
+                                    </a>
+                                </li>
+                            <% } %>
+                
+                            <% if (currentPage < totalPages) { %>
+                                <li><a href="/admin/productlist?page=<%= currentPage + 1 %>" class="pagination-link">Next</a></li>
+                            <% } %>
+                        </ul>
+                    </div>
+            
+
+
                 </div>
                 <div class="divider"></div>
-                <!-- <div class="flex items-center justify-between flex-wrap gap10">
-                    <div class="text-tiny">Showing 10 entries</div>
-                    <ul class="wg-pagination">
-                        <li>
-                            <a href="#"><i class="icon-chevron-left"></i></a>
-                        </li>
-                        <li>
-                            <a href="#">1</a>
-                        </li>
-                        <li class="active">
-                            <a href="#">2</a>
-                        </li>
-                        <li>
-                            <a href="#">3</a>
-                        </li>
-                        <li>
-                            <a href="#"><i class="icon-chevron-right"></i></a>
-                        </li>
-                    </ul>
-                </div> -->
-              </div>
-            <!-- /product-list -->
+                
+             
+            </div>
+
         </div>
-        <!-- /main-content-wrap -->
     </div>
-    <!-- /main-content-wrap -->
-    <!-- bottom-page -->
+
     <div class="bottom-page">
         <div class="body-text">Copyright © 2024 Remos. Design with</div>
         <i class="icon-heart"></i>
         <div class="body-text">by <a href="https://themeforest.net/user/themesflat/portfolio">Themesflat</a> All rights reserved.</div>
     </div>
-    <!-- /bottom-page -->
 </div>
 
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+
+async function addOffer(productId){
+    try {
+        const {value:amount}= await Swal.fire({
+            title:'Offer Percentage',
+            input :'number',
+            inputLabel: 'percentage',
+            inputPlaceholder:'%',
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Please enter a percentage';
+                }
+                if (isNaN(value)) {
+                    return 'Please enter a valid number';
+                }
+                if (value <= 0 || value >= 100) {
+                    return 'Percentage must be between 1 and 99';
+                }
+            }
+           
+        })
+
+        $.ajax({
+            url:"/admin/addProductOffer",
+            method:"post",
+            data:{
+                percentage:amount, 
+                productId:productId, 
+            },
+            success:(response)=>{
+                console.log("Response from server:", response);  // Check if the response is correct
+
+                if(response.status ==true){
+                    Swal.fire("offer Added",response.message, "Success")
+                    .then(()=>{
+                        location.reload()
+                    })
+            }
+            else {
+                Swal.fire("Failed", response.message, "error");
+            }
+            error: (error) =>{
+                console.log(response);
+                Swal.fire("Failed", error.responseJSON?.message || "An error occurred", "error");
+
+            }
+        }
+        })
+    
+
+    } catch (error) {
+        console.log( "error in the addoffer function",error);
+
+        
+    }
+} 
+
+function removeOffer(productId){
+try {
+    Swal.fire({
+        title:"remove offer",
+        text:"Are you sure you want to remove the offer",
+        icon:"warning",
+        showCancelButton:true,
+        confirmButtonColor:"#3085d6",
+        cancelButtonColor:"#d33",
+        confirmButtonText:"Yes, remove it!",
+        timer:5000,
+        timerProgressBar :true,
+    }).then(async(result)=>{
+        if(result.isConfirmed){
+            $.ajax({
+                url:"/admin/removeProductOffer",
+                method:"post",
+                data:{
+                    productId:productId
+                },
+                success:(response)=>{
+                    if(response.status ==true){
+                        Swal.fire("Remove","offer removed","success")
+                        location.reload()
+                    }else if(response.status ==false){
+                        Swal.fire("Error","Offer removalhas failed","error")
+                    }else{
+                        alert(failed)
+                    }
+
+                }
+
+            })
+
+        }
+    })
+} catch (error) {
+    console.log("error in removing offer",error);
+    
+}
+}
+
+</script>
 <%- include('../layouts/admin_layouts/adminFooter.ejs') %>

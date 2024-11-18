@@ -1,0 +1,115 @@
+<%- include('../layouts/user_layouts/userHeader.ejs') %>
+
+
+<div class="row" style="margin-top: 150px;">
+    <div class="col-lg-8">
+      <h3>Edit Address</h3>
+      <form class="row contact_form" id="addressForm" action="/userprofile/edit-address/<%=address._id%>" method="put" novalidate="novalidate">
+      <!-- <form class="row contact_form" id="addressForm"novalidate="novalidate"> -->
+        <div class="col-md-6 form-group p_star">
+          <input type="text" class="form-control" id="name" name="name" placeholder="Full Name" value="<%=address.name%>"/>
+        </div>
+
+        <div class="col-md-6 form-group p_star">
+          <input type="text" class="form-control" id="phone" name="phone" value="<%=address.phone%>" placeholder="Phone number"/>
+        </div>
+        <div class="col-md-6 form-group p_star">
+          <input type="text" class="form-control" id="altphone" name="altPhone" value="<%=address.altPhone%>" placeholder="Alternative Phone number"/>
+        </div>
+
+        <div class="col-md-6 form-group p_star">
+          <input type="text" class="form-control" id="email" name="email" value="<%=address.email%>" placeholder="Email Address"/>
+        </div>
+
+        <div class="col-md-12 form-group">
+          <input type="text" class="form-control" id="building" name="building" value="<%=address.building%>" placeholder="Building name" />
+        </div>
+
+        <div class="col-md-12 form-group p_star">
+          <input type="text" class="form-control" id="add1" name="addresslane" value="<%=address.addresslane%>" placeholder="Address line" />
+        </div>
+        <div class="col-md-12 form-group p_star">
+          <input type="text" class="form-control" id="landmark" name="landMark" value="<%=address.landMark%>" placeholder="landmark" />
+        </div>
+       
+        <div class="col-md-12 form-group p_star">
+          <input type="text" class="form-control" id="city" name="city" value="<%=address.city%>" placeholder="Town/City"/>
+        </div>
+
+        <div class="col-md-12 form-group p_star">
+          <input type="text" class="form-control" id="district" name="district" value="<%=address.district%>" placeholder="District"/>
+        </div>
+        
+        <div class="col-md-12 form-group">
+          <input type="text" class="form-control" id="pincode" name="pincode" value="<%=address.pincode%>" placeholder="Postcode/ZIP" />
+        </div>
+        <div class="col-md-12 form-group">
+          <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+      </form>
+    </div>
+    
+    
+  </div>
+
+
+
+   
+  <script>
+    document.getElementById('addressForm').addEventListener('submit', function (e) {
+        e.preventDefault(); // Prevent the default form submission
+    
+        // Create a FormData object from the form element
+        const formData = new FormData(this);
+    
+        const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+        // fetch(`/userprofile/edit-address/${addressId}`, {
+
+        fetch('/userprofile/edit-address/<%=address._id%>', {
+            method: 'put',
+            headers: {
+                'Content-Type': 'application/json' // Set content type to JSON
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw new Error(errorData.message || 'An unexpected error occurred.');
+                });
+            }
+            return response.json();
+        })
+        .then(result => {
+            if (result.message) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: result.message,
+                    confirmButtonText: 'OK'
+                }).then(()=>{
+                  window.location.href ="/userprofile/addressbook";
+                });
+            }
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message || 'An unexpected error occurred.',
+                confirmButtonText: 'OK'
+            });
+        });
+    });
+    </script>
+
+
+
+
+
+
+
+  <%- include('../layouts/user_layouts/userFooter.ejs') %>

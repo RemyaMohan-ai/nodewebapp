@@ -1,5 +1,8 @@
 const  Category = require("../models/categorySchema")
+const Product = require("../models/productSchema")
 const mongoose = require("mongoose")
+
+
 const categoryInfo = async (req,res)=>{
     try {
         
@@ -9,7 +12,7 @@ const categoryInfo = async (req,res)=>{
     let skip = (page-1)*limit
 
     const categorydata = await Category.find({})
-    .sort({name:-1})
+    .sort({name:1})
     .skip(skip)
     .limit(limit)
 
@@ -21,6 +24,9 @@ const categoryInfo = async (req,res)=>{
         totalCategories:totalCategories,
         currentPage:page
     });
+
+    
+    
 
 } catch (error) {
         console.log("failed in loading catogories",error);
@@ -60,7 +66,6 @@ const addcategory = async (req,res)=>{
             name,
             description
         })
-        console.log("hdbf",newCategory);
         
         await newCategory.save()
         console.log("new category saved",newCategory);
@@ -93,6 +98,7 @@ const  loadeditcategory = async (req,res)=>{
     }
 }
 
+
 const editcategory = async (req, res) => {
     
     try {
@@ -115,35 +121,101 @@ const editcategory = async (req, res) => {
 };
 
 
-const getlistcategory = async (req,res)=>{
+
+
+const getlistingcategory = async (req,res)=>{
     try {
         let id= req.query.id
-        await Category.updateOne({_id:id},{$set:{isListed:false}})
-        res.redirect("/admin/category")
-    } catch (error) {
-        console.log("error while listing",error);
+        const categorydata = await Category.findById(id)
         
-        res.redirect("/admin/pageerror")
+        if(!categorydata){
+            return res.status(404).send("category not found")
+        }
+
+        const newIsListedStatus = !categorydata.isListed;
+
+        if (categorydata.isListed !== newIsListedStatus) {
+            await Category.updateOne({ _id: id }, { $set: { isListed: newIsListedStatus } });
+        }
+
+        res.redirect("/admin/category");
+    } catch (error) {
+        console.log("Error while toggling category listing:", error);
+        res.status(500).redirect("/admin/pageerror");
     }
-   
+};
 
-}
 
-const getunlistcategory= async (req,res)=>{
 
+const addCategoryOffer = async (req,res)=>{
     try {
-        let id= req.query.id
-        await Category.updateOne({_id:id},{$set:{isListed:true}})
-        res.redirect("/admin/category")
-    } catch (error) {
-        console.log("error while listing",error);
-        
-        res.redirect("/admin/pageerror")
-    }
-   
+        const {categoryId ,percentage} = req.body        
+        const findCategory= await Category.findById(categoryId)
+        if(!findCategory) return res.status(404).json({message:"Category not found"})
+        const updateCategory = await Category.updateOne({_id:categoryId},{$set:{categoryOffer:percentage}})
+        if (!updateCategory) {
+        return res.json({status :false , message : "updatefailed"})
+        }
+        const categoryName  = findCategory.name
+        const findProducts  = await Product.find({category:categoryName})
+        const productOffer =  findProducts.some((product)=>{product.productOffer>percentage})
+        if(productOffer){
+            return res.json({status :false , message : "Offer already exist"})
 
+        }
+        
+        for(const product of findProducts){
+            if (product.productOffer < percentage) {
+                product.salePrice = product.price - Math.floor(product.price * percentage / 100);
+                // product.productOffer = percentage;
+                await product.save();
+            }
+
+
+        }
+
+
+
+        res.status(200).json({status:true,message:"product offer added successfully"})
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).render("page 404")
+        
+    }
 }
 
+
+const removeCategoryOffer = async (req, res) => {
+    try {
+        const { categoryId } = req.body;
+        const findCategory = await Category.findById(categoryId);
+        
+        if (!findCategory) return res.status(404).json({ message: "Category not found" });
+
+        const categoryOffer = findCategory.categoryOffer;
+
+        const productsInCategory = await Product.find({ category: findCategory.name });
+
+        findCategory.categoryOffer = 0;
+        await findCategory.save();
+
+        for (const product of productsInCategory) {
+            if (product.productOffer > 0) {
+                product.salePrice = product.price - Math.floor(product.price * (product.productOffer / 100));
+            } else {
+                product.salePrice = product.price-10;
+            }
+            await product.save();
+        }
+
+        res.json({ status: true });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).render("page 404");
+    }
+};
 
 module.exports={
     categoryInfo,
@@ -151,6 +223,5 @@ module.exports={
     loadaddcategory,
     loadeditcategory,
     editcategory,
-    getlistcategory,
-    getunlistcategory
+    getlistingcategory,addCategoryOffer,removeCategoryOffer
 }

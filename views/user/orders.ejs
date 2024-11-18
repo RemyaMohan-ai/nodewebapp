@@ -1,0 +1,228 @@
+<%- include('../layouts/user_layouts/userHeader.ejs') %>
+
+<style>
+    .orders_area {
+      padding-top: 150px;
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    h2 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .order-item {
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .order-item h3 {
+      color: #2c3e50;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+    .order-item p {
+      margin: 10px 0;
+      color: #34495e;
+    }
+    .product-list {
+      list-style-type: none;
+      padding: 0;
+    }
+    .product-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      background-color: #fff;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .product-item img {
+      margin-right: 15px;
+      border-radius: 5px;
+    }
+    .product-details {
+      flex-grow: 1;
+    }
+    .shipping-address {
+      background-color: #ecf0f1;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 15px;
+    }
+    .no-orders {
+      text-align: center;
+      color: #7f8c8d;
+      font-style: italic;
+    }
+  </style>
+  
+  <section class="orders_area">
+    <div class="container">
+      <h2>Your Orders</h2>
+      <% if (orders && orders.length > 0) { %>
+        <% orders.forEach(order => { %>
+          <div class="d-flex justify-content-between">
+            <div>
+              <p>Order ID: <%= order.orderNumber %></p>
+            
+              <p >Payment status: <%= order.paymentStatus %></p>
+            </div>
+              <div>
+                <% if (order.paymentStatus === "Payment Pending" && order.productDetails[0]?.orderStatus === "Pending") { %>
+               <button class="btn btn-danger btn-sm ml-auto" onclick="retryPayment('<%= order._id %>',event)">   
+                 Retry Payment
+                </button>
+              <%}%> 
+              </div>
+            </div>
+          <a href="/userprofile/orderdetails/<%= order._id %>" style="text-decoration: none;color:black;">
+
+          <div class="order-item" >
+            
+           
+            <h4>Products:</h4>
+            <ul class="product-list">
+              <% order.productDetails.forEach(item => { %>
+                <li class="product-item">
+                  <img src="/productimages/<%= item.productId.productImage[0] %>" alt="<%= item.productId.productName %>" width="50" height="50">
+                  <div class="product-details">
+                    <strong><%= item.productId.productName %></strong><br>
+                    Quantity: <%= item.quantity %> - Price: ₹<%= item.price%>
+                    
+
+                  </div>
+                  <p><%= item.orderStatus %></p>
+                  
+                </li>
+                <% if(item.cancellationquantity!==0){ %>
+                  Cancelled Quantity: <%= item.cancellationquantity %><br>
+                  <% } %>
+              <% }); %>
+            </ul>
+            
+            
+          </div>
+          </a>
+        <% }); %>
+      <% } else { %>
+        <p class="no-orders">No orders found.</p>
+      <% } %>
+    </div>
+  </section>
+
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+
+function retryPayment(OrderId,event) {
+  event.stopPropagation();
+    fetch('/cart/retryPayment', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ orderId: OrderId}) 
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.razorpayOrderId) {
+            startRazorpayPayment(data.razorpayOrderId, data.amount, data.currency, data.user, data.razorpayKey);
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Retry Payment Error',
+                text: data.message || 'Unable to retry payment.'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Retry Payment Error',
+            text: 'An unexpected error occurred during retry.'
+        });
+    });
+}
+
+
+function startRazorpayPayment(razorpayOrderId, amount, currency, user, razorpayKey) {
+    const options = {
+        key: razorpayKey,
+        amount: amount,
+        currency: currency,
+        name: "LOUNGE LUX",
+        description: "E-commerce Transaction",
+        order_id: razorpayOrderId,
+        handler: function (response) {
+            fetch('/cart/verifyPayment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    razorpayOrderId: razorpayOrderId,
+                    razorpayPaymentId: response.razorpay_payment_id,
+                    razorpaySignature: response.razorpay_signature
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                icon: 'success',
+                title: 'Payment Successful',
+                text: data.message
+                }).then(() => {
+                    window.location.href = '/cart/orderconfirmation';
+                });
+                } else {
+                    if (data.redirect) {
+            
+                    Swal.fire({
+                    icon: 'error',
+                    title: 'Payment Failed',
+                    text: data.message
+                    }).then(() => {
+                        window.location.href = '/cart/orderconfirmation';
+                    });
+                    }else {
+                    Swal.fire({
+                    icon: 'error',
+                    title: 'Payment Failed',
+                    text: 'Your payment failed. Please try again from the My Orders page.'
+                });
+                }
+                }
+            });
+        },
+        
+       
+        prefill: {
+            name: user.name,
+            email: user.email
+        },
+        theme: {
+            color: "#F37254"
+        }
+    };
+    const rzp1 = new Razorpay(options);
+    rzp1.open();
+}
+
+
+</script>
+  
+
+  
+  <%- include('../layouts/user_layouts/userFooter.ejs') %>

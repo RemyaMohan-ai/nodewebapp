@@ -14,8 +14,10 @@
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
+    "exceljs": "^4.4.0",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
+    "moment": "^2.30.1",
     "mongodb": "^6.8.0",
     "mongoose": "^8.5.2",
     "multer": "^1.4.5-lts.1",
@@ -23,6 +25,9 @@
     "nodemon": "^3.1.4",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "pdfkit": "^0.15.0",
+    "razorpay": "^2.9.4",
+    "sharp": "^0.33.4",
     "sweetalert2": "^11.12.4"
   }
 }

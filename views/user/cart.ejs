@@ -1,0 +1,382 @@
+<%- include('../layouts/user_layouts/userHeader.ejs') %>
+
+<style>
+
+.modal-footer {
+            position: sticky;
+            bottom: 0;
+            background-color: white;
+            z-index: 100;
+            border-top: 1px solid #ddd;
+        }
+</style>
+
+
+<section class="cart_area padding_top">
+    <div class="container">
+      <% if (emptyCart) { %>
+        <div class="empty_cart_message" style="margin: 100px;">
+            <h3>Your cart is empty!</h3>
+            <p>Looks like you haven't added anything to your cart yet.</p>
+            <a class="btn_1" href="/shop/allproducts">Go to Shop</a> <!-- Link to the shop page -->
+        </div>
+        <% } else { %>
+      <div class="cart_inner">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Product</th>
+                <th scope="col">Price</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+            <%cartProducts.forEach(products=>{%>
+              <tr>
+                <td>
+                  <div class="media">
+                    <div class="d-flex">
+                        <img src="/productimages/<%=products.product.productImage[0] %>" alt="product not loading" />
+                    </div>
+                      <div class="media-body">
+                        <p><%= products.product.productName %></p>
+                      </div>
+                  </div>
+                </td>
+                <td>
+                    <h5><%= products.product.salePrice %></h5>
+                </td>
+                <td>
+                  <div class="product_count">
+                    
+                    <input type="text" value="<%= products.quantity %>" min="0" max="10" title="Quantity:" class="quantity_input" />
+                  <div class="quantity_buttons">
+                      <button class="quantity_up" type="button" onclick="updateQuantity('<%=products._id%>','increment')">
+                        <i class="ti-angle-up"></i>
+                      </button>
+                      <button class="quantity_down" type="button" onclick="updateQuantity('<%=products._id%>','decrement')">
+                        <i class="ti-angle-down"></i>
+                      </button>
+                    </div>
+                  </div>
+                </td>
+                
+                
+                
+                <td>
+                  <h5><%= products.product.salePrice * products.quantity %></h5>
+                </td>
+
+                <td>
+                  <button class="" type="button" onclick="deleteitem('<%=products._id%>')">
+                    delete
+                  </button>
+                </td>
+              </tr>
+              <%})%>
+            </tbody>
+              <tr class="bottom_button">
+                <td>
+                  <a class="btn_1" href="#">Update Cart</a>
+                </td>
+                <td></td>
+                <td>
+                  <h5>Subtotal</h5>
+                </td>
+                <td>
+                   <h5 id="cartTotal" data-total="<%= totalPrice %>"><%= totalPrice %></h5>
+                </td>
+              </tr>
+           
+          </table>
+          <div class="row">
+            <div class="cupon_area col-lg-4">
+              <div class="check_title">
+                <h2>
+                  Have a coupon?
+                  <a href="#" data-toggle="modal" data-target="#couponModal">Click here to search for a coupon</a>
+
+                </h2>
+              </div>
+
+<!-- Coupon Modal -->
+              <div class="modal fade" id="couponModal" tabindex="-1" role="dialog" aria-labelledby="couponModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="couponModalLabel">Apply Coupon</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <input type="text" id="couponCode" class="form-control" placeholder="Enter coupon code">
+                                <button class="btn btn-primary mt-2" onclick="applyCoupon()">Check</button>
+                            </div>
+
+                           
+                            <div id="couponList">
+                              <% if (coupons && coupons.length > 0) { %>
+                                <% coupons.forEach(coupon => { %>
+                                <div class="coupon-card">
+                                  <div class="row">
+                                    <div class="col-md-11">
+                                      <p class="coupon-title">COUPON CODE: <span style="font-size: larger;"><%= coupon.code %></span></p>
+                                      <% if (coupon.discountType == "flat") { %>
+                                        <p>Save ₹<%= coupon.discountValue %></p>
+                                      <% } else { %>
+                                        <p>Save <%= coupon.discountValue %>% upto <%= coupon.maxDiscountValue %></p>
+                                      <% } %>
+                                      <div>
+                                        <p>On all orders above ₹<%= coupon.minOrderValue %> get <%= coupon.discountValue %> 
+                                          <% if (coupon.discountType == "flat") { %> ₹ <% } else { %> % <% } %> off
+                                        </p>
+                                      </div>
+                                      <p>Expires on:<%=coupon.expiryDate %></p>
+                                    </div>
+                                  </div>
+                            
+                                  <% if (coupon.minOrderValue <= totalPrice) { %>
+                                    <button type="button" class="apply-btn" onclick="applyCoupon('<%= coupon.code %>')">Apply</button>
+                                  <% } else { %>
+                                    <p style="color: rgb(236, 48, 48);">You need to purchase for ₹<%= coupon.minOrderValue - totalPrice %> to apply the coupon</p>
+                                  <% } %>
+                                </div>
+                                <% }) %>
+                              <% } else { %>
+                                <p>No coupons available at the moment.</p>
+                              <% } %>
+                            </div>
+                        
+                        
+                          </div>
+                    </div>
+                </div>
+              </div>
+
+
+
+
+
+              
+              <div class="d-flex">              
+                <input type="text" id="appliedCouponCode" placeholder="Enter coupon code"  />
+
+              </div>
+              <a class="tp_btn" id="removeCouponBtn" onclick="removeCoupon()" style="display: none;"">Remove Coupon</a>
+
+              <a class="tp_btn"id="applyCouponBtn" onclick="applyCoupon(document.getElementById('appliedCouponCode').value)">Apply Coupon</a>
+
+
+            </div>
+            <p id="couponMessage" style="margin-top: 10px;"></p>
+
+            <div class="col-lg-2"></div>
+            <div class="order_box col-lg-6">
+              <h2>Your Order</h2>
+              <ul class="list">
+                <li>
+                  <a href="#">Product
+                    <span>Total</span>
+                  </a>
+                </li>
+                <%cartProducts.forEach(products=>{%>
+
+                <li>
+                  <a href="#"> <%=products.product.productName%>
+                    <span class="middle">x <%=products.quantity%></span>
+                    <span class="last"><%= products.product.salePrice * products.quantity %></span>
+
+                  </a>
+                </li>
+                <%})%>
+             
+              </ul>
+              <ul class="list" >
+                <li>
+                    <a href="#" style="font-weight:700;" >
+                        Product Offer
+                        <span>₹ - <%= productDiscount %></span>
+
+                       
+                    </a>
+                </li>
+            </ul>
+              <ul class="list list_2">
+                <li>
+                    <a href="#" >
+                        Subtotal
+                        <span>₹<%= totalPrice %></span>
+
+                       
+                    </a>
+                </li>
+            </ul>
+         
+<!-- Coupon Discount -->
+<ul class="list list_2" id="couponDiscountContainer" >
+  <li>
+    <a href="#">
+      Coupon Discount:
+      <span><span id="discountAmount">0</span></span>
+    </a>
+  </li>
+</ul>
+
+<!-- Final Price -->
+<ul class="list list_2">
+  <li>
+    <a href="#">
+      Final Price:
+      <span><span id="finalPrice"><%= totalPrice %></span></span>
+    </a>
+  </li>
+</ul>
+
+
+
+
+
+
+
+              <div class="payment_item">
+                <div class="radion_btn">
+                  <input type="radio" id="f-option5" name="selector" />
+                  <label for="f-option5">Check payments</label>
+                  <div class="check"></div>
+                </div>
+               
+              </div>
+              <div class="payment_item active">
+                <div class="radion_btn">
+                  <input type="radio" id="f-option6" name="selector" />
+                  <label for="f-option6">Paypal </label>
+                  <img src="img/product/single-product/card.jpg" alt="" />
+                  <div class="check"></div>
+                </div>
+              </div>
+          </div>
+          <div class="checkout_btn_inner float-right">
+            <a class="btn_1" href="#">Continue Shopping</a>
+            <a class="btn_1 checkout_btn_1" href="/cart/checkout">Proceed to checkout</a>
+          </div>
+        </div>
+        <% } %>
+      </div>
+
+
+
+    
+  </section>
+
+ 
+
+
+
+
+
+
+
+
+
+  <%- include('../layouts/user_layouts/userFooter.ejs') %>
+
+
+
+
+  <script>
+
+function applyCoupon(couponCode) {
+  const totalPrice = parseFloat(document.getElementById('cartTotal').dataset.total) || 0;
+  fetch('/apply-coupon', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ couponCode, totalPrice }),
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      $('#couponModal').modal('hide');
+      document.getElementById('discountAmount').textContent = `-₹${data.discount}`;
+      document.getElementById('finalPrice').textContent = `₹${data.finalPrice}`;
+      document.getElementById('couponMessage').textContent = data.message;
+      document.getElementById('couponMessage').style.color = 'green';
+       document.getElementById('appliedCouponCode').value = couponCode;
+       document.getElementById('removeCouponBtn').style.display = 'inline-block';
+       document.getElementById('applyCouponBtn').style.display = 'none';
+
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Coupon Applied',
+        text: data.message,
+        showConfirmButton: false, 
+        timer: 2000 
+      });   
+     } else {
+      document.getElementById('couponMessage').textContent = data.message;
+      document.getElementById('couponMessage').style.color = 'red';
+      Swal.fire({
+        icon: 'error',
+        title: 'Coupon Error',
+        text: data.message,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Try Again'
+      });
+    }
+  })
+  .catch(error => console.error('Failed to apply coupon:', error));
+}
+
+function removeCoupon() {
+  const totalPrice = parseFloat(document.getElementById('cartTotal').dataset.total) || 0;
+  
+  fetch('/remove-coupon', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ totalPrice }),  
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      $('#couponModal').modal('hide');
+      
+      document.getElementById('discountAmount').textContent = `₹0.00`;
+      document.getElementById('finalPrice').textContent = `₹${data.finalPrice}`;
+      document.getElementById('couponMessage').textContent = "No coupon applied.";
+      document.getElementById('couponMessage').style.color = 'black';
+      
+      document.getElementById('appliedCouponCode').value = '';
+      document.getElementById('removeCouponBtn').style.display = 'none';
+       document.getElementById('applyCouponBtn').style.display = 'inline-block';
+
+      // document.getElementById('removeCouponBtn').style.display = 'none';
+      Swal.fire({
+        icon: 'success',
+        title: 'Coupon Removed',
+        text: data.message,
+        showConfirmButton: false,
+        timer: 2000
+      });
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Coupon Removal Error',
+        text: data.message,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Try Again'
+      });
+    }
+  })
+  .catch(error => console.error('Failed to remove coupon:', error));
+}
+
+
+
+    </script>
+
+
+   

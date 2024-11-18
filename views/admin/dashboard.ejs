@@ -1,0 +1,98 @@
+<%- include('../layouts/admin_layouts/adminHeader.ejs') %>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="main-content">
+    <div class="main-content-inner">
+        <div class="tf-section-5 mb-30">
+            <div class="wg-box">
+                <div class="flex items-center justify-between">
+                    <h5>Recent Orders</h5>
+                    <div class="dropdown default">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="icon-more"><i class="icon-more-horizontal"></i></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a href="javascript:void(0);" onclick="updateChart('daily')">This Day</a></li>
+                            <li><a href="javascript:void(0);" onclick="updateChart('weekly')">This Week</a></li>
+                            <li><a href="javascript:void(0);" onclick="updateChart('monthly')">This Month</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="orderChart"></canvas>
+                </div>
+              </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let orderChart;
+
+    // Function to update the chart based on filter type
+    async function updateChart(filterType) {
+        try {
+            // Fetch data from the backend based on the selected filterType
+            const response = await fetch(`/admin/dashboard/?filterType=${filterType}`);
+            
+            // Check if the response is ok and contains JSON data
+            if (!response.ok) throw new Error("Network response was not ok");
+            const data = await response.json();
+
+            // Process the data: extract dates and total prices
+            const labels = data.map(order => new Date(order.date).toLocaleDateString());
+            const values = data.map(order => order.totalPrice);
+
+            // Destroy previous chart instance if it exists
+            if (orderChart) {
+                orderChart.destroy();
+            }
+
+            // Render the chart
+            const ctx = document.getElementById('orderChart').getContext('2d');
+            orderChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: `Total Sales (${filterType})`,
+                        data: values,
+                        fill: false,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Total Price'
+                            }
+                        }
+                    }
+                }
+            });
+        } catch (error) {
+            console.error("Error updating chart:", error);
+        }
+    }
+
+    // Load chart with default filter (e.g., daily) on page load
+    updateChart('daily');
+</script>

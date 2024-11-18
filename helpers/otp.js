@@ -4,7 +4,12 @@ const generateOTP = ()=>{
     otp = otp.toString().padStart(6,'0')
     return otp
 }
-// console.log(generateotp());
+
+
+const generateReferralCode = () => {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
+};
+
 
 const sendOTP  =async (email,OTP)=>{
   try {
@@ -36,4 +41,4 @@ const sendOTP  =async (email,OTP)=>{
 
 
 
-module.exports = { generateOTP, sendOTP };
+module.exports = { generateOTP, sendOTP,generateReferralCode };

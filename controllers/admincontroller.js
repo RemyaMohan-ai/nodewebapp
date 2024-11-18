@@ -2,6 +2,12 @@ const express = require("express")
 const mongoose = require("mongoose")
 const User = require("../models/userSchema")
 
+const loadadmin = async (req,res)=>{
+    if(!req.session.admin){
+        return res.redirect('/login')
+    }
+    return res.render("admindashboard")
+}
 
  const adminerror = async (req,res)=>{
     try {
@@ -37,5 +43,5 @@ const User = require("../models/userSchema")
 
 
  module.exports={
-    adminerror,adminlogout
+    adminerror,adminlogout,loadadmin
  }

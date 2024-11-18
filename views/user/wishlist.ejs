@@ -1,0 +1,65 @@
+<%- include('../layouts/user_layouts/userHeader.ejs') %>
+
+
+<section class="cart_area padding_top">
+  
+    <div class="container">
+      <div class="cart_inner">
+        <div class="table-responsive">
+          <% if (wishlistProducts.length === 0) { %>
+            <!-- If there are no products in the wishlist, show a message -->
+            <div class="empty-wishlist">
+              <h2>Your wishlist is empty!</h2>
+              <p>Browse our collection and add items to your wishlist.</p>
+            </div>
+          <% } else { %>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Product</th>
+                  <th scope="col">Price</th>
+                  
+                </tr>
+              </thead>
+              <tbody>
+              <% wishlistProducts.forEach((product)=> { %>
+
+                <tr id="wishlist-item-<%= product._id %>">
+                  <td>
+                    <div class="media">
+                      <div class="d-flex">
+                        <img src="/productimages/<%=product.productImage[0] %>" alt="product not loading" />
+                      </div>
+                      <div class="media-body">
+                        <p><%= product.productName %></p>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <h5><%= product.salePrice %></h5>
+                  </td>
+                  <td>
+                    <button class="add-to-wishlist" onclick='addtowishlist("<%=product._id %>")'>
+                      <i class="ti-heart"></i>
+                      <p>remove</p>
+                    </button>  
+                  </td>
+                  <td>
+                    <button class="add_cart" onclick='addtocart("<%= product._id %>")'>
+                      + add to cart
+                    </button>  
+                                  
+                  </td>
+                 
+                  
+                
+              <%}); %>  
+              </tbody>
+            </table>
+            <% } %>  
+            
+            
+          </div>
+      </div>
+  </section>
+  <%- include('../layouts/user_layouts/userFooter.ejs') %>

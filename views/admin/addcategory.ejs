@@ -1,6 +1,5 @@
 <%- include('../layouts/admin_layouts/adminHeader.ejs') %>
 
-
 <div class="main-content">
     <!-- main-content-wrap -->
     <div class="main-content-inner">
@@ -26,6 +25,7 @@
                     </li>
                 </ul>
             </div>
+
             <!-- new-category -->
             <div class="wg-box">
                 <form method="post" action="/admin/addcategory" class="form-new-product form-style-1" onsubmit="return handleForm(event)">
@@ -69,28 +69,26 @@ function handleForm(event) {
     const name = document.getElementById("categoryName").value;
     const description = document.getElementById('descriptionId').value;
 
-    // Use fetch to send data to the server
     fetch("/admin/addcategory", {
-        method: "POST", // Method is POST for submitting data
+        method: "POST",
         headers: {
-            "Content-Type": "application/json" // Specify the content type as JSON
+            "Content-Type": "application/json" 
         },
-        body: JSON.stringify({ name, description }) // Convert the form data to JSON
+        body: JSON.stringify({ name, description })
     })
     .then(response => {
         if (!response.ok) {
             return response.json().then(err => {
-                throw new Error(err.error); // Throw error if response is not ok
+                throw new Error(err.error); 
             });
         }
-        return response.json(); // Parse JSON response
+        return response.json();
     })
     .then(data => {
-        console.log(data.message); // Optionally handle the response data
-        window.location.href = "/admin/category"; // Redirect to category list on success
+        console.log(data.message);
+        window.location.href = "/admin/category"; 
     })
     .catch(error => {
-        // Handle errors and show appropriate messages
         if (error.message === "Category already exists") {
             Swal.fire({
                 icon: "error",

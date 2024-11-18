@@ -14,7 +14,7 @@ const productSchema = new Schema({
             // type: mongoose.Schema.Types.ObjectId, 
             // ref: 'Category', required: true 
 
-            type: String,
+              type: String,
             
            },
         brand: { 
@@ -57,8 +57,8 @@ const productSchema = new Schema({
            default: 0 
           },
         status: { 
-            type: String,
-            // enum:["Available","Out of Stock","Unavailable"],
+             type: String,
+            //  enum:["Available","Out of Stock","Unavailable"],
              default: "available"
             },
             
@@ -66,9 +66,11 @@ const productSchema = new Schema({
         ratings: { type: Number, 
           default: 0 
         },
-        reviews: [{ user: String,
+        reviews: [{
+           user: String,
            review: String, 
-           rating: Number }]
+           rating: Number 
+          }]
       },{timestamps:true});
       
     const product = mongoose.model('Product', productSchema);

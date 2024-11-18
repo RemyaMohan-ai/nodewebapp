@@ -1,0 +1,260 @@
+
+<%- include('../layouts/user_layouts/userHeader.ejs') %>
+
+<section class="checkout_area padding_top">
+  <div class="container">
+   
+    
+    <div class="billing_details">
+      <section style="margin-top: 90px;">
+        <div class="row">
+            <% if (address && address.length > 0) { %>
+                <% address.forEach(function(address) { %>
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <p><strong><%= address.name %></strong></p>
+                                <p><%= address.building %>, <%= address.addresslane %>, <%= address.city %>, <%= address.state %>, <%= address.pincode %></p>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <p>Please add an address</p>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+      </section>
+      
+      
+      <div class="row">
+        <div class="col-lg-8">
+          <h3>Billing Details</h3>
+          <form class="row contact_form" id="addressForm" action="/addaddress" method="post" novalidate="novalidate">
+          <!-- <form class="row contact_form" id="addressForm"novalidate="novalidate"> -->
+            <div class="col-md-6 form-group p_star">
+              <input type="text" class="form-control" id="name" name="name" placeholder="Full Name" />
+              <span class="error" id="nameError"></span>
+
+            </div>
+
+            <div class="col-md-6 form-group p_star">
+              <input type="text" class="form-control" id="phone" name="phone" placeholder="Phone number"/>
+              <span class="error" id="phoneError"></span>
+
+            </div>
+            <div class="col-md-6 form-group p_star">
+              <input type="text" class="form-control" id="altphone" name="altPhone" placeholder="Alternative Phone number"/>
+              <span class="error" id="altPhoneError"></span>
+
+            </div>
+
+            <div class="col-md-6 form-group p_star">
+              <input type="text" class="form-control" id="email" name="email" placeholder="Email Address"/>
+              <span class="error" id="emailError"></span>
+
+            </div>
+
+            <div class="col-md-12 form-group">
+              <input type="text" class="form-control" id="building" name="building" placeholder="Building name" />
+              <span class="error" id="buildingError"></span>
+
+            </div>
+
+            <div class="col-md-12 form-group p_star">
+              <input type="text" class="form-control" id="add1" name="addresslane" placeholder="Address line" />
+              <span class="error" id="addressError"></span>
+
+            
+            </div>
+            <div class="col-md-12 form-group p_star">
+              <input type="text" class="form-control" id="landmark" name="landMark" placeholder="landmark" />
+              <span class="error" id="landmarkError"></span>
+            
+            </div>
+           
+            <div class="col-md-12 form-group p_star">
+              <input type="text" class="form-control" id="city" name="city" placeholder="Town/City"/>
+              <span class="error" id="cityError"></span>
+            </div>
+
+            <div class="col-md-12 form-group p_star">
+              <input type="text" class="form-control" id="district" name="district" placeholder="District"/>
+              <span class="error" id="districtError"></span>
+            </div>
+            
+            <div class="col-md-12 form-group">
+              <input type="text" class="form-control" id="pincode" name="pincode" placeholder="Postcode/ZIP" />
+              <span class="error" id="pincodeError"></span>
+
+            </div>
+            <div class="col-md-12 form-group">
+              <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+          </form>
+        </div>
+        
+        
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 
+<script>
+
+
+
+  document.getElementById('addressForm').addEventListener('submit', function (e) {
+      e.preventDefault(); // Prevent the default form submission
+  
+      // Create a FormData object from the form element
+      const formData = new FormData(this);
+  
+      const data = {};
+      formData.forEach((value, key) => {
+          data[key] = value;
+      });
+  
+      fetch('/addaddress', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json' // Set content type to JSON
+          },
+          body: JSON.stringify(data)
+      })
+      .then(response => {
+          if (!response.ok) {
+              return response.json().then(errorData => {
+                  throw new Error(errorData.message || 'An unexpected error occurred.');
+              });
+          }
+          return response.json();
+      })
+      .then(result => {
+          if (result.message) {
+              Swal.fire({
+                  icon: 'success',
+                  title: 'Success',
+                  text: result.message,
+                  confirmButtonText: 'OK'
+              }).then(()=>{
+                window.location.href ="/cart/checkout";
+              });
+          }
+      })
+      .catch(error => {
+          Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: error.message || 'An unexpected error occurred.',
+              confirmButtonText: 'OK'
+          });
+      });
+  });
+  </script> -->
+  <%- include('../layouts/user_layouts/userFooter.ejs') %>
+
+<script>
+
+document.getElementById('addressForm').addEventListener('submit', function (e) {
+    e.preventDefault(); // Prevent default form submission
+
+    // Validate form fields
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const addresslane = document.getElementById('add1').value.trim();
+    const city = document.getElementById('city').value.trim();
+    const pincode = document.getElementById('pincode').value.trim();
+    
+    let isValid = true;
+
+    if (!name) {
+        document.getElementById('nameError').innerText = "Full Name is required";
+        isValid = false;
+    } else {
+        document.getElementById('nameError').innerText = "";
+    }
+
+    if (!phone || !/^\d{10}$/.test(phone)) {
+        document.getElementById('phoneError').innerText = "Valid Phone number is required";
+        isValid = false;
+    } else {
+        document.getElementById('phoneError').innerText = "";
+    }
+
+    if (!addresslane) {
+        document.getElementById('addressError').innerText = "Address line is required";
+        isValid = false;
+    } else {
+        document.getElementById('addressError').innerText = "";
+    }
+
+    if (!city) {
+        document.getElementById('cityError').innerText = "City is required";
+        isValid = false;
+    } else {
+        document.getElementById('cityError').innerText = "";
+    }
+
+    if (!pincode || !/^\d{6}$/.test(pincode)) {
+        document.getElementById('pincodeError').innerText = "Valid Postcode/ZIP is required";
+        isValid = false;
+    } else {
+        document.getElementById('pincodeError').innerText = "";
+    }
+
+    // If form is valid, submit using fetch
+    if (isValid) {
+        const formData = new FormData(this);
+
+        const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+
+        fetch('/addaddress', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json' // Set content type to JSON
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw new Error(errorData.message || 'An unexpected error occurred.');
+                });
+            }
+            return response.json();
+        })
+        .then(result => {
+            if (result.message) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: result.message,
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.location.href = "/cart/checkout"; // Redirect to checkout
+                });
+            }
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message || 'An unexpected error occurred.',
+                confirmButtonText: 'OK'
+            });
+        });
+    }
+});
+
+
+</script>

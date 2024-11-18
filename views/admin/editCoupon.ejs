@@ -1,0 +1,145 @@
+<%- include('../layouts/admin_layouts/adminHeader.ejs') %>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<div class="main-content">
+    <div class="main-content-inner">
+        <div class="main-content-wrap">
+            <div class="flex items-center flex-wrap justify-between gap20 mb-27">
+                <h3>Add Coupon</h3>
+                <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+                    <li>
+                        <a href="index.html"><div class="text-tiny">Dashboard</div></a>
+                    </li>
+                    <li>
+                        <i class="icon-chevron-right"></i>
+                    </li>
+                    <li>
+                        <a href="#"><div class="text-tiny">Ecommerce</div></a>
+                    </li>
+                    <li>
+                        <i class="icon-chevron-right"></i>
+                    </li>
+                    <li>
+                        <div class="text-tiny">Add Coupon</div>
+                    </li>
+                </ul>
+            </div>
+            <form id="addCouponForm" method="post" action="/admin/editCoupon/<%= couponDetails._id %>" class="tf-section-2 form-add-coupon">
+                <div class="wg-box">
+                    
+                    
+                    <!-- Coupon Code -->
+                    <fieldset class="code">
+                        <div class="body-title mb-10">Coupon Code <span class="tf-color-1">*</span></div>
+                        <input class="mb-10" type="text" placeholder="Enter coupon code" name="code" value="<%= couponDetails.code %>" required>
+                        <div id="code-error" class="error"></div>
+                    </fieldset>
+
+                    <!-- Discount Type -->
+                    <fieldset class="discountType">
+                        <div class="body-title mb-10">Discount Type <span class="tf-color-1">*</span></div>
+                        <select class="mb-10" name="discountType" required>
+                            <option value="" disabled>Select discount type</option>
+                            <option value="percentage" <%= couponDetails.discountType === 'percentage' ? 'selected' : '' %>>Percentage</option>
+                            <option value="flat" <%= couponDetails.discountType === 'flat' ? 'selected' : '' %>>Flat</option>
+                        </select>
+                        <div id="discountType-error" class="error"></div>
+                    </fieldset>
+
+                    <!-- Discount Value -->
+                    <fieldset class="discountValue">
+                        <div class="body-title mb-10">Discount Value <span class="tf-color-1">*</span></div>
+                        <input class="mb-10" type="number" placeholder="Enter discount value" name="discountValue" value="<%= couponDetails.discountValue %>" required>
+                        <div id="discountValue-error" class="error"></div>
+                    </fieldset>
+
+
+                    <!-- Minimum Order Value -->
+                    <fieldset class="minOrderValue">
+                        <div class="body-title mb-10">Minimum Order Value</div>
+                        <input class="mb-10" type="number" placeholder="Enter minimum order value" name="minOrderValue" value="<%= couponDetails.minOrderValue %>">
+                        <div id="minOrderValue-error" class="error"></div>
+                    </fieldset>
+
+
+       
+
+
+
+                    <!-- Expiry Date -->
+                    <fieldset class="expiryDate">
+                        <div class="body-title mb-10">Expiry Date <span class="tf-color-1">*</span></div>
+                        <input class="mb-10" type="date" name="expiryDate"  id="expiryDate"  value="<%= couponDetails.expiryDate %>"required>
+                        <div id="expiryDate-error" class="error"></div>
+                    </fieldset>
+
+                    <fieldset class="active">
+                        <div class="body-title mb-10">Active <span class="tf-color-1">*</span></div>
+                        <select class="mb-10" name="active" required>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                        <div id="active-error" class="error"></div>
+                    </fieldset>
+
+
+                    <div class="cols gap10">
+                        <button class="tf-button style-1 w-full" type="submit">Save Coupon</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById("expiryDate").setAttribute('min', today);
+
+
+    document.getElementById("addCouponForm").addEventListener("submit", function(event) {
+        let isValid = true;
+        let code = document.querySelector('input[name="code"]');
+        let discountType = document.querySelector('select[name="discountType"]');
+        let discountValue = document.querySelector('input[name="discountValue"]');
+        let active = document.querySelector('select[name="active"]');
+        
+        document.querySelectorAll('.error').forEach((error) => error.innerText = '');
+
+        if (!code.value.trim()) {
+            document.getElementById("code-error").innerText = "Coupon code is required.";
+            isValid = false;
+        }
+
+        if (!discountType.value) {
+            document.getElementById("discountType-error").innerText = "Discount type is required.";
+            isValid = false;
+        }
+
+        if (!discountValue.value || parseFloat(discountValue.value) <= 0) {
+            document.getElementById("discountValue-error").innerText = "Discount value must be a positive number.";
+            isValid = false;
+        }
+
+        if (!active.value) {
+            document.getElementById("active-error").innerText = "Active status is required.";
+            isValid = false;
+        }
+
+        if (!isValid) {
+            event.preventDefault();
+        }
+    });
+
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
+<%- include('../layouts/admin_layouts/adminFooter.ejs') %>

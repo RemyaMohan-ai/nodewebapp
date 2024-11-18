@@ -1,0 +1,195 @@
+<%- include('../layouts/admin_layouts/adminHeader.ejs') %>
+
+<div class="main-content">
+    <!-- main-content-wrap -->
+    <div class="main-content-inner">
+        <!-- main-content-wrap -->
+        <div class="main-content-wrap">
+            <div class="flex items-center flex-wrap justify-between gap20 mb-27">
+                <h3>Order List</h3>
+                <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+                    <li>
+                        <a href="index.html"><div class="text-tiny">Dashboard</div></a>
+                    </li>
+                    <li>
+                        <i class="icon-chevron-right"></i>
+                    </li>
+                    <li>
+                        <a href="#"><div class="text-tiny">Order</div></a>
+                    </li>
+                    <li>
+                        <i class="icon-chevron-right"></i>
+                    </li>
+                    <li>
+                        <div class="text-tiny">Order List</div>
+                    </li>
+                </ul>
+            </div>
+            <!-- order-list -->
+            <div class="wg-box">
+                <div class="flex items-center justify-between gap10 flex-wrap">
+                    <div class="wg-filter flex-grow">
+                        <form class="form-search">
+                            <fieldset class="name">
+                                <input type="text" placeholder="Search here..." class="" name="name" tabindex="2" value="" aria-required="true" required="">
+                            </fieldset>
+                            <div class="button-submit">
+                                <button class="" type="submit"><i class="icon-search"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="wg-table table-all-category">
+                    <ul class="table-title flex gap20 mb-14">
+                        <li>
+                            <div class="body-title">Product</div>
+                        </li>    
+                        <li>
+                            <div class="body-title">Order ID</div>
+                        </li>
+                        <li>
+                            <div class="body-title">Price</div>
+                        </li>
+                        <li>
+                            <div class="body-title">Quantity</div>
+                        </li>
+                        <li>
+                            <div class="body-title">Payment</div>
+                        </li>
+                        <li>
+                            <div class="body-title">Status</div>
+                        </li>
+                        
+                        <li>
+                            <div class="body-title">Order Date</div>
+                        </li>
+                        <li>
+                            <div class="body-title">Delivery Date</div>
+                        </li>
+                        <li>
+                            <div class="body-title">Action</div>
+                        </li>
+                    </ul>
+                    
+                    <ul class="flex flex-column">
+                        <% orders.forEach(order => { %>
+                            <% order.productDetails.forEach(product => { %>
+                                <li class="product-item gap14">
+                                    <div class="image no-bg">
+                                        <img src="/productimages/<%= product.productId.productImage[0] %>" alt="">
+                                    </div>
+                                    <div class="flex items-center justify-between gap20 flex-grow">
+                                        <div class="name">
+                                            <a href="product-list.html" class="body-title-2">
+                                                <%= product.productId.productName %>
+                                            </a>
+                                        </div>
+                                        <div class="body-text">#<%= order.orderNumber %></div>
+                                        <div class="body-text">$<%= product.price %></div>
+                                        <div class="body-text"><%= product.quantity %></div>
+                                        <div class="body-text"><%= order.paymentMethod %></div>
+                                        
+                                        <div class="body-text">
+                                            <select onchange="updateOrderStatus('<%= order._id %>', '<%= product.productId._id %>', '<%= product.quantity %>',this.value)" class="block-available">
+                                                <option value="Pending" <%= product.orderStatus === 'Pending' ? 'selected' : '' %>>Pending</option>
+                                                <option value="Confirmed" <%= product.orderStatus === 'Confirmed' ? 'selected' : '' %>>Confirmed</option>
+                                                <option value="Shipping" <%= product.orderStatus === 'Shipping' ? 'selected' : '' %>>Shipping</option>
+                                                <option value="Delivered" <%= product.orderStatus === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                                                <option value="Cancelled" <%= product.orderStatus === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                                                <option value="Return Requested", <%= product.orderStatus === 'Return Requested' ? 'selected' : '' %>>Return Requested</option>
+                                                <option value='Return Initiated' <%= product.orderStatus === 'Return Initiated' ? 'selected' : '' %>>Return Initiated</option>
+                                                <option value='Partially Cancelled' <%= product.orderStatus === 'Partially Cancelled' ? 'selected' : '' %>>Partially Cancelled</option>
+                                                <option value="Returned" <%= product.orderStatus === 'Returned' ? 'selected' : '' %>>Returned</option>
+                                                <option value="Return cancelled" <%= product.orderStatus === 'Return cancelled' ? 'selected' : '' %>>Return Cancelled</option>
+                                            </select>
+                                        </div>
+                                        <div class="body-text"><%=new Date(order.createdAt).toLocaleDateString() %></div>
+                                        <div class="body-text"><%=new Date(product.deliveryDate).toLocaleDateString()  %></div>
+                                        
+                                        <div class="list-icon-function">
+                                            <div class="item eye">
+                                                <a href="/admin/orderlist/<%= order._id %>"><i class="icon-eye"></i></a>
+                                            </div>
+                                            <div class="item trash">
+                                                <i class="icon-trash-2"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            <% }); %>
+                        <% }); %>
+                    </ul>
+                
+                </div>
+                <div class="divider"></div>
+                
+                <div class="pagination">
+                    <ul class="pagination-list flex items-center justify-center gap10">
+                        <% if (currentPage > 1) { %>
+                            <li><a href="/admin/orderlist?page=<%= currentPage - 1 %>" class="pagination-link">Previous</a></li>
+                        <% } %>
+            
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                            <li>
+                                <a href="/admin/orderlist?page=<%= i %>" class="pagination-link <%= currentPage === i ? 'active' : '' %>">
+                                    <%= i %>
+                                </a>
+                            </li>
+                        <% } %>
+            
+                        <% if (currentPage < totalPages) { %>
+                            <li><a href="/admin/orderlist?page=<%= currentPage + 1 %>" class="pagination-link">Next</a></li>
+                        <% } %>
+                    </ul>
+                </div>
+        
+            </div>
+            <!-- /order-list -->
+        </div>
+        <!-- /main-content-wrap -->
+    </div>
+    <!-- /main-content-wrap -->
+    <!-- bottom-page -->
+    <div class="bottom-page">
+        <div class="body-text">Copyright © 2024 Remos. Design with</div>
+        <i class="icon-heart"></i>
+        <div class="body-text">by <a href="https://themeforest.net/user/themesflat/portfolio">Themesflat</a> All rights reserved.</div>
+    </div>
+    <!-- /bottom-page -->
+</div>
+
+
+<%- include('../layouts/admin_layouts/adminFooter.ejs') %>
+
+
+<script>
+   
+    function updateOrderStatus(orderId, productId,quantity, status) {
+        const deliveryDate = status === 'Delivered' ? new Date().toISOString() : null;
+    fetch('/admin/updateOrderStatus', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            orderId: orderId,
+            productId: productId,
+            orderStatus: status,
+            deliveryDate:deliveryDate,
+            quantity:quantity
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Order status updated successfully.');
+        } else {
+            alert('Error updating order status.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+</script>
