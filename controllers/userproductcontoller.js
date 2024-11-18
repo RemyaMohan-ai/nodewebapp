@@ -3,7 +3,7 @@ const Wishlist = require("../models/wishlist")
 const Cart = require("../models/cartSchema")
 const User = require("../models/userSchema")
 const Category = require("../models/categorySchema")
-
+const Order = require("../models/orderSchema")
 
 
 
@@ -52,7 +52,7 @@ const getcategories = async (req, res) => {
 
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = 6; 
+        const limit =8; 
         const skip = (page - 1) * limit;
 
         const categoryName = req.params.name;
@@ -164,6 +164,40 @@ const getcategories = async (req, res) => {
             color: item._id,
             count: item.count
         }));
+
+        const bestSellingProducts = await Order.aggregate([
+            { $unwind: "$productDetails" },
+            {
+                $group: {
+                    _id: "$productDetails.productId",
+                    totalSold: { $sum: "$productDetails.quantity" },
+    
+                }
+            },
+            { $sort: { totalSold: -1 } },
+            { $limit:3},
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'productInfo'
+                }
+            },
+            { $unwind: "$productInfo" },
+            {
+                $project: {
+                    productImage:"$productInfo.productImage",
+                    productName: "$productInfo.productName",
+                    productPrice: "$productInfo.salePrice",
+                    productOffer: "$productInfo.productOffer",
+                    productId: "$productInfo._id",
+                   
+                }
+            }
+        ]);
+        console.log("bestSellingProducts",bestSellingProducts);
+        
         res.render("sectional", {
             
             categoryData,
@@ -180,7 +214,8 @@ const getcategories = async (req, res) => {
             colorData,
             selectedCategories,
             selectedBrands,
-            selectedColors
+            selectedColors,
+            bestSellingProducts
         });
 
     } catch (error) {
