@@ -67,6 +67,7 @@ const checkout = async (req, res) => {
         res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
         res.set('Pragma', 'no-cache');
         res.set('Expires', '0');
+console.log(" finalPrice:cartItem.finalPrice,",cartItem.finalPrice,);
 
         res.render("checkout", {
             address: selectedAddress,
