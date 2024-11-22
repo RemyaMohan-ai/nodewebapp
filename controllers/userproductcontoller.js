@@ -196,7 +196,7 @@ const getcategories = async (req, res) => {
                 }
             }
         ]);
-        console.log("bestSellingProducts",bestSellingProducts);
+        // console.log("bestSellingProducts",bestSellingProducts);
         
         res.render("sectional", {
             

@@ -132,6 +132,7 @@ const loadCart = async (req, res) => {
         const today = new Date()
         today.setHours(0, 0, 0, 0);
         const coupons =  await Coupon.find({expiryDate:{$gt:today }});
+        console.log("carrtpage showing");
 
 
         return res.render("cart", {

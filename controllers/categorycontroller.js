@@ -110,7 +110,7 @@ const editcategory = async (req, res) => {
             console.log("Category not found");
             return res.redirect("/admin/category");
         }
-        console.log("edited category",updatecategory);
+        // console.log("edited category",updatecategory);
         
         console.log("Category updated successfully");
         res.redirect("/admin/category"); // Adjust the redirect path as needed

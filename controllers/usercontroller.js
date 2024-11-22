@@ -108,7 +108,7 @@ const loadhome = async (req, res) => {
                 }
             }
         ]);
-    console.log("bestSellingProducts",bestSellingProducts);
+    // console.log("bestSellingProducts",bestSellingProducts);
     
     const slider1 = bestSellingProducts.slice(0, 4); // First 4 products
     const slider2 = bestSellingProducts.slice(4, 8); // Next 4 products
