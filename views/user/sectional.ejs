@@ -103,24 +103,12 @@
     #sortOptions option {
         padding: 8px;
     }
+    
+
 </style>
 
 
-<!-- 
-<section class="breadcrumb breadcrumb_bg">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="breadcrumb_iner">
-                    <div class="breadcrumb_iner_item">
-                        <h2>Shop Category</h2>
-                        <p>Home <span>-</span> Shop Category</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section> -->
+
 
 <section class="cat_product_area section_padding">
     <div class="container">
@@ -186,29 +174,36 @@
                         </div>
                     </aside>
 
-                  
+
                     <aside class="left_widgets p_filter_widgets price_rangs_aside">
                         <div class="l_w_title">
                             <h3>Price Filter</h3>
                         </div>
                         <div class="widgets_inner">
                             <div class="range_item">
-                                <input type="range" id="minPrice" min="0" max="100000" value="0" oninput="updatePriceRange()" />
-                                <input type="range" id="maxPrice" min="0" max="100000" value="100000" oninput="updatePriceRange()" />
-                                <div class="d-flex">
+                                <input type="range" id="minPrice" min="0" max="100000" value="0" oninput="updatePriceDisplay()" />
+                                <input type="range" id="maxPrice" min="0" max="100000" value="100000" oninput="updatePriceDisplay()" />
+                                <div class="d-flex" style="width: 700px;">
                                     <div class="price_text">
                                         <p>Price :</p>
                                     </div>
-                                    <div class="price_value d-flex justify-content-center">
-                                        <input type="text" id="minPriceDisplay" value="0" readonly />
-                                        <span>to</span>
-                                        <input type="text" id="maxPriceDisplay" value="100000" readonly />
+                                    <div  style="display: flex; align-items: center;">
+                                        <input type="number" id="minPriceDisplay" value="0" style="width: 120px; text-align: right;" />
+                                        <span style="margin: 0 10px;">to</span>
+                                        <input type="number" id="maxPriceDisplay" value="100000" style="width: 120px; text-align: right;" />
                                     </div>
+                                    
                                 </div>
+                                
                             </div>
+                            <button id="priceFilterSubmit" class="btn btn-primary mt-3">Apply Price Filter</button>
                         </div>
                     </aside>
-                
+                    
+
+
+
+
                 </div>
             </div>
         </div>
@@ -322,21 +317,7 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="row align-items-center justify-content-between">
-            <div class="col-lg-12">
-
-                <div >
-                    <div class="single_product_item">
-                        <img src="img/product/product_1.png" alt="">
-                        <div class="single_product_text">
-                            <h4>Quartz Belt Watch</h4>
-                            <h3>₹150.00</h3>
-                        </div>
-                    </div>
-                    ]
-                </div>
-            </div>
-        </div> -->
+        
     
         <div class="row align-items-center justify-content-between">
             <% if (bestSellingProducts && bestSellingProducts.length > 0) { %>
@@ -374,15 +355,24 @@
 <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
 <script>
 
-function updatePriceRange() {
-        const minPrice = document.getElementById('minPrice').value;
-        const maxPrice = document.getElementById('maxPrice').value;
+function updatePriceDisplay() {
+    const minPrice = document.getElementById('minPrice').value;
+    const maxPrice = document.getElementById('maxPrice').value;
 
-        document.getElementById('minPriceDisplay').value = minPrice;
-        document.getElementById('maxPriceDisplay').value = maxPrice;
-
-        applyFilters(); // Update the filters when price changes
+    document.getElementById('minPriceDisplay').value = minPrice;
+    document.getElementById('maxPriceDisplay').value = maxPrice;
+    if (minPrice > maxPrice) {
+        minPrice = maxPrice;
+        minPriceInput.value = minPrice; 
     }
+
+    if (maxPrice < minPrice) {
+        maxPrice = minPrice; 
+        maxPriceInput.value = maxPrice;
+    }
+
+    
+}
 
     function applyFilters() {
         const selectedCategories = Array.from(document.querySelectorAll('.category-filter:checked')).map(cb => cb.value);
@@ -400,13 +390,28 @@ function updatePriceRange() {
         currentUrl.searchParams.set('minPrice', minPrice);
         currentUrl.searchParams.set('maxPrice', maxPrice);
 
-        currentUrl.searchParams.set('page', '1'); // Reset to first page when filtering
+        currentUrl.searchParams.set('page', '1'); 
         window.location.href = currentUrl.toString();
     }
 
-    document.querySelectorAll('.category-filter, .brand-filter, .color-filter').forEach(checkbox => {
-        checkbox.addEventListener('change', applyFilters);
-    });
+    // document.getElementById('priceFilterSubmit').addEventListener('click', applyFilters);
+
+    // document.querySelectorAll('.category-filter, .brand-filter, .color-filter').forEach(checkbox => {
+    //     checkbox.addEventListener('change', applyFilters);
+    // });
+
+
+
+document.querySelectorAll('#minPrice, #maxPrice').forEach(input => {
+    input.addEventListener('input', updatePriceDisplay);
+});
+
+document.querySelectorAll('.category-filter, .brand-filter, .color-filter').forEach(checkbox => {
+    checkbox.addEventListener('change', applyFilters);
+});
+
+document.getElementById('priceFilterSubmit').addEventListener('click', applyFilters);
+
 
     function sortProducts(sortOption) {
     const currentUrl = new URL(window.location.href);

@@ -21,6 +21,8 @@ const getSingleProduct =async (req,res)=>{
         }
     try {
         const productId =  req.params.id
+        const wishlist = userId ? await Wishlist.findOne({ user: userId }) : null;
+
         const singleProduct = await product.findById(productId).populate('category')
         const relatedProduct = await product.find({ 
             category: singleProduct.category, 
@@ -32,10 +34,11 @@ const getSingleProduct =async (req,res)=>{
         if (!singleProduct) {
             return res.status(404).send('Product not found');
         }
-        res.render("singleproduct",{singleProduct,relatedProduct,user: userData})
+        res.render("singleproduct",{singleProduct,relatedProduct,user: userData,wishlist})
     } catch (error) {
         console.log("error",error);
-        
+        return res.status(500).send('Internal Server Error');
+
     }
 }
 
@@ -215,7 +218,7 @@ const getcategories = async (req, res) => {
             selectedCategories,
             selectedBrands,
             selectedColors,
-            bestSellingProducts
+            bestSellingProducts,
         });
 
     } catch (error) {

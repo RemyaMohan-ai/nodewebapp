@@ -68,10 +68,6 @@ const addCart = async (req, res) => {
         } else {
             return res.status(200).json({ message: "Product added to cart" });
         }
-
-
-
-
         
     } catch (error) {
         console.log(error);
@@ -118,7 +114,7 @@ const loadCart = async (req, res) => {
             const quantity = parseInt(item.quantity, 10) || 0;
             return total + (salePrice * quantity);
         }, 0);
-        console.log(totalPrice);
+        console.log("totalPrice",totalPrice);
         const productDiscount =cartItem.products.reduce((offer, item) => {
             const salePrice = parseFloat(item.product.salePrice) || 0; // Access salePrice from populated product
             const price = parseFloat(item.product.price) || 0; // Access salePrice from populated product
@@ -171,7 +167,7 @@ const quantity = async (req, res) => {
         const availableStock = eachProduct.stock;
         const currentQuantity = productItem.quantity;
 
-        console.log("Product:", eachProduct, "Available stock:", availableStock, "Current quantity:", currentQuantity);
+        // console.log("Product:", eachProduct, "Available stock:", availableStock, "Current quantity:", currentQuantity);
 
         if (action === "increment") {
             if (currentQuantity >= availableStock) {
@@ -195,7 +191,7 @@ const quantity = async (req, res) => {
             { $inc: { "products.$.quantity": value } }
         );
 
-                    console.log(result);
+                    // console.log(result);
                     
         if (result.nModified === 0) {
             return res.status(400).json({ message: "Failed to update cart" });
@@ -411,7 +407,7 @@ const verifyPayment = async (req, res) => {
                 { paymentStatus: 'Paid', razorpayPaymentId },
                 { new: true }
             );
-            console.log("updatedOrder",updatedOrder);
+            // console.log("updatedOrder",updatedOrder);
             if(!updatedOrder) {
                 return res.status(400).json({ success: false, message: 'Order not found' });
             }
@@ -446,9 +442,7 @@ const retryPayment = async (req, res) => {
             const { orderId } = req.body;
             
             const order = await Order.findById(orderId)
-            .populate('userId')
-            ;
-            console.log("userIdorderId",order);
+            .populate('userId');
             
             if (!order || order.paymentStatus !== 'Payment Pending') {
                 return res.status(400).json({ success: false, message: 'Order not available for retry or already paid.' });

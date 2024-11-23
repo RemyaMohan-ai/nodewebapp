@@ -65,7 +65,7 @@ router.post('/cart/retryPayment', userauth, cartcontroller.retryPayment);
 router.get("/cart/orderconfirmation",userauth,cartcontroller.orderconfirmation)
 
 router.get("/cart/addaddress",userauth,addressController.addressPage)
-router.get("/cart/checkout",userauth,checkOrderStatus,addressController.checkout)
+router.get("/cart/checkout",userauth,addressController.checkout)
 router.post("/cart/checkout",userauth,addressController.selectAddress)
 router.post("/addaddress",userauth,addressController.addAddress)
 

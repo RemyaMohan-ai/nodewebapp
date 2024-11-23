@@ -5,7 +5,6 @@ const userauth =async (req,res,next)=>{
           if (!req.session.user) {
             return res.redirect("/login");
           }
-    //   console.log("req.session.orderId",req.session);
       
           const user = await User.findById(req.session.user);
       
@@ -19,7 +18,6 @@ const userauth =async (req,res,next)=>{
       
           req.user = user;
           
-          // Attach user to request object for later use
           next();
         } catch (error) {
           console.error("Error in user authentication middleware:", error);
@@ -73,24 +71,21 @@ const checkstatus =  (req,res,next)=>{
     }
 };
 
-const checkOrderStatus = async (req, res, next) => {
-    try {
-        const userId = req.session.user; // Assuming you are storing user ID in session
-        const orderId = req.session.orderId;
-        console.log("orderId in auth",orderId);
+// const checkOrderStatus = async (req, res, next) => {
+//     try {
+//         const userId = req.session.user; 
+//         const orderId = req.session.orderId;
         
-        // Check if the user has an existing order
-        if (orderId) {
-            // If there's an existing order, redirect to the cart page
-            return res.redirect('/cart'); // Change this path to your cart page
-        }
+//         if (orderId) {
+//             return res.redirect('/cart'); 
+//         }
         
-        next(); // If no order exists, proceed to the next middleware/route handler
-    } catch (error) {
-        console.error("Error checking order status:", error);
-        return res.status(500).send("Internal server error");
-    }
-};
+//         next();
+//     } catch (error) {
+//         console.error("Error checking order status:", error);
+//         return res.status(500).send("Internal server error");
+//     }
+// };
 
 
 
@@ -106,6 +101,6 @@ module.exports={
     userauth,
     adminauth,
     checkstatus,
-    checkOrderStatus,
+    // checkOrderStatus,
     cacheControl
 }
