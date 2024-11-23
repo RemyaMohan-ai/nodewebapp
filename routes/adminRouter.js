@@ -36,8 +36,8 @@ router.get("/dashboard/",adminauth,adminDashbordController.loadDashboard)
 
 
 router.get("/salesreport",adminauth,salesReportController.generateSalesReport)
-router.get('/download/report/pdf',salesReportController.generateSalesReportPDF)
-router.get('/download/report/excel',salesReportController.generateSalesReportExcel)
+router.get('/download/report/pdf',adminauth,salesReportController.generateSalesReportPDF)
+router.get('/download/report/excel',adminauth,salesReportController.generateSalesReportExcel)
 
 router.get("/pageerror",admincontroller.adminerror)
 router.post("/logout",admincontroller.adminlogout)
@@ -65,22 +65,22 @@ router.get('/productedit', adminauth, productcontroller.loadEditProduct);
 router.post('/productedit', adminauth, upload, productcontroller.updateProduct);
 router.get("/listingproducts",adminauth,productcontroller.getlistingproduct)
 
-router.post("/addProductOffer",productcontroller.addProductOffer)    
-router.post("/removeProductOffer",productcontroller.removeProductOffer)    
+router.post("/addProductOffer",adminauth,productcontroller.addProductOffer)    
+router.post("/removeProductOffer",adminauth,productcontroller.removeProductOffer)    
 
 
-router.get("/orderlist",ordercontroller.getAllOrders)
-router.post("/updateOrderStatus",ordercontroller.updateOrderStatus)
-router.get("/orderlist/:orderId",ordercontroller.getOrderDetails)
+router.get("/orderlist",adminauth,ordercontroller.getAllOrders)
+router.post("/updateOrderStatus",adminauth,ordercontroller.updateOrderStatus)
+router.get("/orderlist/:orderId",adminauth,ordercontroller.getOrderDetails)
 
 
 
-router.get("/addcoupon",adminCouponController.loadAddCoupon)    
-router.post("/addcoupon",adminCouponController.addCoupon)    
-router.get("/couponList",adminCouponController.couponList)    
-router.get("/editCoupon/:couponId",adminCouponController.loadeditCoupon)    
-router.post("/editCoupon/:couponId",adminCouponController.editCoupon)    
-router.delete("/deletecoupon/:couponId", adminCouponController.deleteCoupon);
+router.get("/addcoupon",adminauth,adminCouponController.loadAddCoupon)    
+router.post("/addcoupon",adminauth,adminCouponController.addCoupon)    
+router.get("/couponList",adminauth,adminCouponController.couponList)    
+router.get("/editCoupon/:couponId",adminauth,adminCouponController.loadeditCoupon)    
+router.post("/editCoupon/:couponId",adminauth,adminCouponController.editCoupon)    
+router.delete("/deletecoupon/:couponId",adminauth, adminCouponController.deleteCoupon);
 
 
 module.exports = router
