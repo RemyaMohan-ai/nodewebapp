@@ -62,6 +62,63 @@
       color: #7f8c8d;
       font-style: italic;
     }
+    /* Center the pagination container */
+.pagination-container {
+  width: 70%;
+  margin: 50px auto;
+  text-align: center;
+}
+
+/* Make the pagination numbers scrollable */
+.scrollable-pagination {
+  display: inline-block;
+  overflow-x: auto;
+  white-space: nowrap;
+  max-width: 300px; /* Adjust the width for better usability */
+  margin: 0 auto;
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+/* Pagination styling */
+.pagination {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-item {
+  display: inline-block;
+}
+
+.page-link {
+  display: block;
+  padding: 5px 10px;
+  margin: 0 2px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  text-decoration: none;
+  color: #000000;
+  transition: background-color 0.3s;
+}
+
+.page-link:hover {
+  background-color: #0a0a0a;
+  color: white;
+}
+
+.page-item.active .page-link {
+  background-color: #060606;
+  color: white;
+  border-color: #000000;
+}
+
+
+
+    
   </style>
   
   <section class="orders_area">
@@ -108,7 +165,6 @@
               <% }); %>
             </ul>
             
-            
           </div>
           </a>
         <% }); %>
@@ -118,8 +174,66 @@
     </div>
   </section>
 
+<!-- 
+  <nav aria-label="Page navigation">
+    <ul class="pagination">
+      <% if (currentPage > 1) { %>
+        <li class="page-item">
+          <a class="page-link" href="?page=<%= currentPage - 1 %>">Previous</a>
+        </li>
+      <% } %>
+      <% for (let i = 1; i <= totalPages; i++) { %>
+        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+          <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+        </li>
+      <% } %>
+      <% if (currentPage < totalPages) { %>
+        <li class="page-item">
+          <a class="page-link" href="?page=<%= currentPage + 1 %>">Next</a>
+        </li>
+      <% } %>
+    </ul>
+  </nav>
+ -->
+ <div class="pagination-container">
+  <nav aria-label="Page navigation">
+    <ul class="pagination">
+      <% if (currentPage > 1) { %>
+        <li class="page-item">
+          <a class="page-link" href="?page=<%= currentPage - 1 %>">Previous</a>
+        </li>
+      <% } %>
+      
+      <!-- Scrollable Section -->
+      <div class="scrollable-pagination">
+        <% if (currentPage > 1) { %>
+          <li class="page-item">
+            <a class="page-link" href="?page=<%= currentPage - 1 %>">Previous</a>
+          </li>
+        <% } %>
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+            <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+          </li>
+        <% } %>
+        <% if (currentPage < totalPages) { %>
+          <li class="page-item">
+            <a class="page-link" href="?page=<%= currentPage + 1 %>">Next</a>
+          </li>
+        <% } %>
+      </div>
+      <!-- End of Scrollable Section -->
+      
+      
+    </ul>
+  </nav>
+</div>
 
 
+
+
+  
+  
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>

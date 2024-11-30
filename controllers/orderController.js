@@ -13,19 +13,34 @@ const path = require('path');
 const orderlist = async (req, res) => {
   try {
     const userId = req.session.user;
-    const orders = await Order.find({ userId })
+
+    const totalOrders = await Order.countDocuments({userId})
+    const page =parseInt(req.query.page)|| 1 ;
+    const limit = 10 ;
+    const skip = (page-1)*limit
+
+    const orders = await Order.find({userId})
       .populate({
         path: 'productDetails.productId',
         select: 'productName salePrice price productImage'
       })
       
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip(skip);
       
+      const totalPages=Math.ceil( totalOrders/limit)
+
       const addressDocument = await Address.findOne({ 'address._id': orders.orderingAddress }, { 'address.$': 1 });
             
       const orderingAddress = addressDocument ? addressDocument.address[0] : null;
 
-    res.render("orders", { orders ,orderingAddress});
+    res.render("orders", { 
+      orders ,
+      orderingAddress,
+      currentPage:page,
+      totalPages
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send("Server Error");

@@ -17,20 +17,6 @@
                         <div class="text-tiny"></div>
                     </fieldset>
                     <div class="gap22 cols">
-                     <!-- <fieldset class="category">
-                            <div class="body-title mb-10">Category <span class="tf-color-1">*</span></div>
-                             <select class="mb-10" name="category" tabindex="0" aria-required="true">
-                                <option value="" disabled selected>Select a category</option>
-                                <% categories.forEach(category => { %>
-                                    <option value="<%= category.name %>">
-                                        <%= category.name %>
-                                    </option>
-                                <% }); %>
-                            </select>
-                            <div id="category-error" class="error"></div>
-
-                            
-                     </fieldset> -->
                         
                      <fieldset class="category">
                         <div class="body-title mb-10">Category <span class="tf-color-1">*</span></div>
@@ -123,18 +109,15 @@
                     <fieldset>
                         <div class="body-title mb-10">Upload images</div>
                         <div class="upload-image mb-16">
-                            
-                
                             <div id="existingImagePreview" class="image-preview">
                                 <% product.productImage.forEach((image, index) => { %>
                                     <div class="existing-image-item">
                                         <img src="/productimages/<%= image %>" alt="Product Image <%= index + 1 %>" style="max-width: 100px; margin: 10px;">
-                <div>
-                                        
-                
-                                        <!-- Optional: You can also add a remove button for existing images -->
-                                        <button type="button" onclick="removeExistingImage('<%= image %>')">Remove</button>
-                </div>
+                                        <div>
+                                                                
+                                        <button type="button" onclick="removeExistingImage('<%= image %>', '<%= product._id %>')">Remove</button>
+
+                                        </div>
                                     </div>
                                 <% }) %>
                             </div>
@@ -174,11 +157,10 @@
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-    // Handle form submission
     document.getElementById('addProductForm').addEventListener('submit', handleProductForm);
 
     function handleProductForm(event) {
-        event.preventDefault(); // Prevent default form submission
+        event.preventDefault(); 
         if (validateProductForm()) {
             event.target.submit();
         }
@@ -199,21 +181,32 @@
             }
         });
 
-        // Additional validation for numeric fields
         ['price', 'salePrice', 'stock'].forEach(field => {
             const value = document.getElementsByName(field)[0].value.trim();
-            if (value !== '' && isNaN(value)) {
+            if (value !== '') {
+            if (isNaN(value)) {
                 displayErrorMessage(`${field}-error`, `${field.charAt(0).toUpperCase() + field.slice(1)} must be a number.`);
                 isValid = false;
+            } else if (Number(value) < 0) {
+                displayErrorMessage(`${field}-error`, `${field.charAt(0).toUpperCase() + field.slice(1)} cannot be negative.`);
+                isValid = false;
             }
+        }
+       
         });
 
-        // Validate file upload
-        // const fileInput = document.getElementById('productImage');
-        // if (fileInput.files.length < 3) {
-        //     displayErrorMessage('image-error', 'Please select at least 3 product images.');
-        //     isValid = false;
-        // }
+        const existingImages = document.querySelectorAll('#existingImagePreview .existing-image-item').length; // Count existing images
+        const newImages = document.getElementById('productImage')?.files.length || 0; // Count newly added images
+        const totalImages = existingImages + newImages;
+
+        if (totalImages < 3) {
+            displayErrorMessage('image-error', 'You must upload at least 3 images (including existing and new images).');
+            isValid = false;
+        } else {
+            displayErrorMessage('image-error', ''); 
+        }
+        
+        
         return isValid;
     }
 
@@ -227,7 +220,9 @@
         }
     }
 
-    // Handle image file changes
+
+
+
     const productImageInput = document.getElementById('productImage');
     if (productImageInput) {
         productImageInput.addEventListener('change', function(event) {
@@ -262,11 +257,20 @@
 });
 
 
-function removeExistingImage(image) {
+function removeExistingImage(image ,productId) {
     const confirmation = confirm("Are you sure you want to remove this image?");
     if (confirmation) {
-        // Remove the image preview (you can also make an API call to remove it from the server)
         document.querySelector(`[src="/productimages/${image}"]`).parentElement.remove();
+        fetch("/admin/deleteimg", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json" 
+            },
+            body: JSON.stringify({
+                productId: productId,
+                image: image
+            })
+        })
     }
 }
 

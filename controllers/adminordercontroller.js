@@ -2,10 +2,10 @@ const Order = require('../models/orderSchema');
 const Address = require("../models/addressSchema")
 const Wallet = require("../models/walletSchema")
 const Product = require("../models/productSchema")
+
+
 const getAllOrders = async (req, res) => {
     try {
-
-
         let page = parseInt(req.query.page) || 1; 
         let limit = 5;
         let skip = (page - 1) * limit; 
@@ -29,16 +29,10 @@ const getAllOrders = async (req, res) => {
 };
 
 
-
-
-
 const updateOrderStatus = async (req, res) => {
     try {
         const { orderId, productId, orderStatus,deliveryDate,quantity } = req.body;
-        await Order.updateMany(
-            { "productDetails.deliveryDate": { $exists: false } },
-            { $set: { "productDetails.$[].deliveryDate": null } }  
-        );
+        
         const order = await Order.findById(orderId)
         const userId = order.userId
         console.log("userId",userId);
@@ -96,6 +90,7 @@ const updateOrderStatus = async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal server error' })
     }
 };
+
 
 const getOrderDetails = async (req,res)=>{
     try {

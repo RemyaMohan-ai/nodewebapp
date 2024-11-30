@@ -95,7 +95,7 @@
             <button class="btn btn-warning btn-sm ml-auto" data-toggle="modal" data-target="#returnModal<%= index %>">
               Return
             </button>
-            <% } else if (item.orderStatus === "Return Requested" || item.orderStatus === "Return Initiated") { %>
+            <% } else if (item.orderStatus === "Return Requested" ) { %>
               <button class="btn btn-danger btn-sm ml-auto" data-toggle="modal" data-target="#cancelReturnModal<%= index %>">
               Cancel Return
             </button>

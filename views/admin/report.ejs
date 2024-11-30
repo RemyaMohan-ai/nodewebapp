@@ -5,7 +5,7 @@
     <div class="main-content-inner">
         <!-- main-content-wrap -->
         <div class="main-content-wrap">
-            <div class="tf-section-4 mb-30">
+            <!-- <div class="tf-section-4 mb-30">
                 <div class="wg-chart-default">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap14">
@@ -36,7 +36,7 @@
                     </div>
                 </div>
                 
-            </div>
+            </div> -->
             <!-- <div class=" mb-30">
                 
 
@@ -54,8 +54,11 @@
                         <h5>Sales Report</h5>
                         <div class="download-buttons">
                             <!-- <a href="/admin/download/report/pdf" class="btn btn-primary">Download PDF</a> -->
-                            <a class="tf-button style-1 w208" href="/admin/download/report/pdf"><i class="icon-file-text"></i>Download PDF</a>
-                            <a class="tf-button style-1 w208" href="/admin/download/report/excel"><i class="icon-file-text"></i>Download Excel</a>
+                            <a id="download-pdf-btn" class="tf-button style-1 w208" href="/admin/download/report/pdf">
+                                <i class="icon-file-text"></i>Download PDF
+                            </a>
+                            <a class="tf-button style-1 w208" href="/admin/download/report/excel">
+                                <i class="icon-file-text"></i>Download Excel</a>
                             <!-- <a href="/admin/download/report/excel" class="btn btn-primary">Download Excel</a> -->
                         
                         </div>
@@ -125,7 +128,7 @@
                         <% } %>
                     </div>
                     <div class="flex items-center justify-between flex-wrap gap10">
-                        <ul class="wg-pagination">
+                        <!-- <ul class="wg-pagination">
                             <% if (currentPage > 1) { %>
                                 <li>
                                     <a href="?page=<%= currentPage - 1 %>">
@@ -147,8 +150,31 @@
                                     </a>
                                 </li>
                             <% } %>
-                        </ul>
+                        </ul> -->
                         
+                        <ul class="wg-pagination">
+                            <% if (currentPage > 1) { %>
+                                <li>
+                                    <a href="?filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>&page=<%= currentPage - 1 %>">
+                                        <i class="icon-chevron-left"></i>
+                                    </a>
+                                </li>
+                            <% } %>
+                        
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                                <li class="<%= currentPage == i ? 'active' : '' %>">
+                                    <a href="?filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>&page=<%= i %>"><%= i %></a>
+                                </li>
+                            <% } %>
+                        
+                            <% if (currentPage < totalPages) { %>
+                                <li>
+                                    <a href="?filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>&page=<%= currentPage + 1 %>">
+                                        <i class="icon-chevron-right"></i>
+                                    </a>
+                                </li>
+                            <% } %>
+                        </ul>
                         
 
                         
@@ -289,11 +315,7 @@
     </div>
     <!-- /main-content-wrap -->
     <!-- bottom-page -->
-    <div class="bottom-page">
-        <div class="body-text">Copyright © 2024 Remos. Design with</div>
-        <i class="icon-heart"></i>
-        <div class="body-text">by <a href="https://themeforest.net/user/themesflat/portfolio">Themesflat</a> All rights reserved.</div>
-    </div>
+    
     <!-- /bottom-page -->
 </div>
 
@@ -317,6 +339,33 @@
             alert("Please select both start and end dates.");
         }
     }
+
+
+
+
+ 
+
+    function getQueryParams() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return {
+            filter: urlParams.get('filter'),
+            startDate: urlParams.get('startDate'),
+            endDate: urlParams.get('endDate')
+        };
+    }
+
+    const queryParams = getQueryParams();
+    const downloadBtn = document.getElementById("download-pdf-btn");
+    let queryString = '';
+    if (queryParams.filter) {
+        queryString = `?filter=${queryParams.filter}`;
+    }else if( queryParams.startDate||queryParams.endDate){
+        queryString = `?startDate=${queryParams.startDate}&endDate=${queryParams.endDate}`;
+
+    }
+
+    downloadBtn.href = `/admin/download/report/pdf${queryString}`;
+
 </script>
 
 

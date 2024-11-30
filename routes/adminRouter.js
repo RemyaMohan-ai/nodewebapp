@@ -61,8 +61,11 @@ router.get("/addproduct",adminauth,productcontroller.loadaddproducts)
 
 
 router.post('/addproduct', upload, productcontroller.addproducts);
-router.get('/productedit', adminauth, productcontroller.loadEditProduct);
+router.get('/productedit', adminauth, productcontroller.loadEditProduct)
+router.post('/deleteimg', adminauth, productcontroller.deleteImg);
+
 router.post('/productedit', adminauth, upload, productcontroller.updateProduct);
+
 router.get("/listingproducts",adminauth,productcontroller.getlistingproduct)
 
 router.post("/addProductOffer",adminauth,productcontroller.addProductOffer)    

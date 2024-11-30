@@ -1,6 +1,7 @@
 const Product = require("../models/productSchema")
 const category = require("../models/categorySchema")
 const mongoose = require("mongoose")
+const fs = require("fs")
 
 const loadaddproducts = async (req,res)=>{
     console.log("Message received:", req.query.message);
@@ -113,6 +114,42 @@ const loadEditProduct = async (req, res) => {
         res.status(500).send("Server error");
     }
 };
+
+
+
+// Remove image from product
+const deleteImg = async (req, res) => {
+    try {
+        console.log(req.body);
+
+        const { productId, image } = req.body;  
+        const product = await Product.findById(productId);
+
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        const updatedImages = product.productImage.filter(img => img !== image);
+
+        product.productImage = updatedImages;
+
+        await product.save();
+
+        const path = `./public/productimages/${image}`;
+        if (fs.existsSync(path)) {
+            fs.unlinkSync(path); 
+        }
+
+        return res.json({ message: 'Image removed successfully' });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Error removing image' });
+    }
+};
+
+
+
 
 
 const updateProduct = async (req, res) => {
@@ -232,6 +269,7 @@ module.exports={
     addproducts,
     getlistingproduct,
     loadEditProduct,
+    deleteImg,
     updateProduct,
     addProductOffer,
     removeProductOffer

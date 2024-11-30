@@ -90,7 +90,7 @@
                                         <div class="body-text"><%= order.paymentMethod %></div>
                                         
                                         <div class="body-text">
-                                            <select onchange="updateOrderStatus('<%= order._id %>', '<%= product.productId._id %>', '<%= product.quantity %>',this.value)" class="block-available">
+                                            <!-- <select onchange="updateOrderStatus('<%= order._id %>', '<%= product.productId._id %>', '<%= product.quantity %>',this.value)" class="block-available">
                                                 <option value="Pending" <%= product.orderStatus === 'Pending' ? 'selected' : '' %>>Pending</option>
                                                 <option value="Confirmed" <%= product.orderStatus === 'Confirmed' ? 'selected' : '' %>>Confirmed</option>
                                                 <option value="Shipping" <%= product.orderStatus === 'Shipping' ? 'selected' : '' %>>Shipping</option>
@@ -101,7 +101,44 @@
                                                 <option value='Partially Cancelled' <%= product.orderStatus === 'Partially Cancelled' ? 'selected' : '' %>>Partially Cancelled</option>
                                                 <option value="Returned" <%= product.orderStatus === 'Returned' ? 'selected' : '' %>>Returned</option>
                                                 <option value="Return cancelled" <%= product.orderStatus === 'Return cancelled' ? 'selected' : '' %>>Return Cancelled</option>
-                                            </select>
+                                            </select> -->
+                                        
+                                            
+                                            <select 
+                                            onchange="updateOrderStatus('<%= order._id %>', '<%= product.productId._id %>', '<%= product.quantity %>', this.value)" 
+                                            class="block-available">
+                                            <% 
+                                                const allowedTransitions = {
+                                                    Pending: ['Confirmed', 'Cancelled'],
+                                                    Confirmed: ['Shipping', 'Cancelled'],
+                                                    Shipping: ['Delivered', 'Cancelled'],
+                                                    Delivered: [],
+                                                    Cancelled: [],
+                                                    "Return Requested": ['Return Initiated', 'Return Cancelled'],
+                                                    "Return Initiated": ['Returned', 'Return Cancelled'],
+                                                    Returned: [],
+                                                    "Return Cancelled": [],
+                                                    "Partially Cancelled": [],
+                                                };
+                                        
+                                                const currentStatus = product.orderStatus;
+                                            
+                                                const transitions = allowedTransitions[currentStatus] || [];
+                                            %>
+                                        
+                                            <% if (currentStatus) { %>
+                                                
+                                                <option value="<%= currentStatus %>" selected><%= currentStatus %></option>
+                                                <% transitions.forEach(status => { 
+                                                    if (status !== currentStatus) { %>
+                                                    <option value="<%= status %>"><%= status %></option>
+                                                <% }}) %>
+                                            <% } else { %>
+                                                <option value="" disabled selected>No Status Available</option>
+                                            <% } %>
+                                        </select>
+                                            
+                                        
                                         </div>
                                         <div class="body-text"><%=new Date(order.createdAt).toLocaleDateString() %></div>
                                         <div class="body-text"><%=new Date(product.deliveryDate).toLocaleDateString()  %></div>
@@ -148,14 +185,7 @@
         </div>
         <!-- /main-content-wrap -->
     </div>
-    <!-- /main-content-wrap -->
-    <!-- bottom-page -->
-    <div class="bottom-page">
-        <div class="body-text">Copyright © 2024 Remos. Design with</div>
-        <i class="icon-heart"></i>
-        <div class="body-text">by <a href="https://themeforest.net/user/themesflat/portfolio">Themesflat</a> All rights reserved.</div>
-    </div>
-    <!-- /bottom-page -->
+    
 </div>
 
 

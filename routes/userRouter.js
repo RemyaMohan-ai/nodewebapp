@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const passport = require("passport")
-const {userauth,adminauth,checkstatus,checkOrderStatus,cacheControl} = require("../middlewares/auth")
+const {userauth,adminauth,checkstatus,header,cacheControl} = require("../middlewares/auth")
 
 const usercontroller = require("../controllers/usercontroller")
 const userproductcontroller = require("../controllers/userproductcontoller")
@@ -11,7 +11,7 @@ const userProfileController = require("../controllers/userProfileController")
 const orderController = require("../controllers/orderController")
 const userCouponController = require("../controllers/usercouponcontroller")
 const walletController = require("../controllers/walletController")
-// const invoiceController = require("../controllers/invoiceController")
+
 
 router.use(checkstatus)
 router.use(cacheControl);
@@ -70,32 +70,32 @@ router.post("/cart/checkout",userauth,addressController.selectAddress)
 router.post("/addaddress",userauth,addressController.addAddress)
 
 
-router.get("/userprofile/editprofile",userauth,userProfileController.loadEditUser)
-router.post("/userprofile/editprofile",userauth,userProfileController.editUser)
-router.get("/userprofile/changepassword",userauth,userProfileController.getchangePassword)
+router.get("/userprofile/editprofile",userauth,header,userProfileController.loadEditUser)
+router.post("/userprofile/editprofile",userauth,header,userProfileController.editUser)
+router.get("/userprofile/changepassword",userauth,header,userProfileController.getchangePassword)
 
-router.post("/userprofile/changepassword",userauth,userProfileController.changePassword)
-
-
-
-router.get("/userprofile/addressbook",userauth,userProfileController.addressBook)
-router.post("/userprofile/addnewaddress",userauth,userProfileController.addNewAddress)
-router.post("/userprofile/addnewaddress",userauth,userProfileController.addNewAddress)
-router.get("/userprofile/edit-address/:id",userauth,userProfileController.loadEditAddress)
-router.put("/userprofile/edit-address/:id",userauth,userProfileController.updatedAddress)
-router.delete("/userprofile/delete-address/:id",userauth,userProfileController.deleteAddress)
+router.post("/userprofile/changepassword",userauth,header,userProfileController.changePassword)
 
 
 
-router.get("/userprofile/orders",userauth,orderController.orderlist)
-router.get("/userprofile/orderdetails/:id",userauth,orderController.orderdetails)
-router.get('/download-invoice/:orderId',userauth,orderController.generateInvoice)
-router.post('/order/cancel-product',userauth,orderController.cancelProduct);
-router.post('/order/return-product',orderController.returnProduct);
-router.post('/order/cancel-return',orderController.cancelReturn);
+router.get("/userprofile/addressbook",userauth,header,userProfileController.addressBook)
+router.post("/userprofile/addnewaddress",userauth,header,userProfileController.addNewAddress)
+router.post("/userprofile/addnewaddress",userauth,header,userProfileController.addNewAddress)
+router.get("/userprofile/edit-address/:id",userauth,header,userProfileController.loadEditAddress)
+router.put("/userprofile/edit-address/:id",userauth,header,userProfileController.updatedAddress)
+router.delete("/userprofile/delete-address/:id",userauth,header,userProfileController.deleteAddress)
 
-router.get("/userprofile/referal",userauth,userProfileController.loadReferral)
-router.post("/apply-referral",userauth,userProfileController.applyReferral)
+
+
+router.get("/userprofile/orders",userauth,header,orderController.orderlist)
+router.get("/userprofile/orderdetails/:id",userauth,header,orderController.orderdetails)
+router.get('/download-invoice/:orderId',userauth,header,orderController.generateInvoice)
+router.post('/order/cancel-product',userauth,header,orderController.cancelProduct);
+router.post('/order/return-product',header,orderController.returnProduct);
+router.post('/order/cancel-return',header,orderController.cancelReturn);
+
+router.get("/userprofile/referal",userauth,header,userProfileController.loadReferral)
+router.post("/apply-referral",userauth,header,userProfileController.applyReferral)
 
 router.get("/userprofile/wallet",userauth,walletController.getWalletDetails)
 
@@ -105,16 +105,7 @@ router.get("/userprofile/wallet",userauth,walletController.getWalletDetails)
 
 
 
-
-
-
-
-
-
-
-
-
-router.get("/userprofile",(req,res)=>{
+router.get("/userprofile",userauth,header,(req,res)=>{
     return res.render("profile")
 })
 router.get("/demo",(req,res)=>{

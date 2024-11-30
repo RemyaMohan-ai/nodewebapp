@@ -17,6 +17,7 @@ const userauth =async (req,res,next)=>{
           }
       
           req.user = user;
+
           
           next();
         } catch (error) {
@@ -71,23 +72,22 @@ const checkstatus =  (req,res,next)=>{
     }
 };
 
-// const checkOrderStatus = async (req, res, next) => {
-//     try {
-//         const userId = req.session.user; 
-//         const orderId = req.session.orderId;
-        
-//         if (orderId) {
-//             return res.redirect('/cart'); 
-//         }
-        
-//         next();
-//     } catch (error) {
-//         console.error("Error checking order status:", error);
-//         return res.status(500).send("Internal server error");
-//     }
-// };
 
-
+const header =async (req,res,next)=>{
+    try {
+        const userId = req.session.user; // Assuming user ID is stored in session
+        if (userId) {
+            const userData = await User.findById(userId);
+            res.locals.user = userData; // Attach user data to res.locals
+        } else {
+            res.locals.user = null; // Ensure it's null if no user is logged in
+        }
+        next(); // Proceed to the next middleware or route handler
+    } catch (error) {
+        console.error("Error in setUserMiddleware:", error);
+        next(error); // Forward the error to the error handler
+    }
+}
 
 const cacheControl = (req, res, next) => {
     res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -101,6 +101,6 @@ module.exports={
     userauth,
     adminauth,
     checkstatus,
-    // checkOrderStatus,
+    header,
     cacheControl
 }
