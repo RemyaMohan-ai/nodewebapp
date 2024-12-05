@@ -117,7 +117,6 @@ const loadEditProduct = async (req, res) => {
 
 
 
-// Remove image from product
 const deleteImg = async (req, res) => {
     try {
         console.log(req.body);

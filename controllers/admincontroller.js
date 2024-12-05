@@ -142,7 +142,6 @@ const loadadmin = async (req,res)=>{
             }
         ]);
 
-        // Top 5 Best-Selling Categories
         const topCategories = await Order.aggregate([
             { $match: filter },
             { $unwind: "$productDetails" },
@@ -181,7 +180,6 @@ const loadadmin = async (req,res)=>{
         
 
 
-        // Render the dashboard with all the necessary data
         res.render('dashboard', {
             salesCount,
             totalAmount,

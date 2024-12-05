@@ -611,53 +611,53 @@
                                
 
                                 <h4 class="best-selling-title">Best-Selling Products & Categories (<%= filterType %>)</h4>
-<div class="best-selling-container">
-    <div class="best-selling-card">
-        <div class="best-selling-header">
-            <h3>Best-Selling Products</h3>
-            <div class="header-icon">
-                <i class="fas fa-box"></i>
-            </div>
-        </div>
-        <div class="best-selling-list">
-            <% topProducts.forEach((product, index) => { %>
-                <div class="best-selling-item <%= index % 2 === 0 ? 'even' : 'odd' %>">
-                    <span class="product-name">
-                        <%= product.productName %>
-                        <span class="product-rank">#<%= index + 1 %></span>
-                    </span>
-                    <span class="product-sales">
-                        <%= product.totalSold %> 
-                        <small>sold</small>
-                    </span>
-                </div>
-            <% }) %>
-        </div>
-    </div>
+                                <div class="best-selling-container">
+                                    <div class="best-selling-card">
+                                        <div class="best-selling-header">
+                                            <h3>Best-Selling Products</h3>
+                                            <div class="header-icon">
+                                                <i class="fas fa-box"></i>
+                                            </div>
+                                        </div>
+                                        <div class="best-selling-list">
+                                            <% topProducts.forEach((product, index) => { %>
+                                                <div class="best-selling-item <%= index % 2 === 0 ? 'even' : 'odd' %>">
+                                                    <span class="product-name">
+                                                        <%= product.productName %>
+                                                        <span class="product-rank">#<%= index + 1 %></span>
+                                                    </span>
+                                                    <span class="product-sales">
+                                                        <%= product.totalSold %> 
+                                                        <small>sold</small>
+                                                    </span>
+                                                </div>
+                                            <% }) %>
+                                        </div>
+                                    </div>
 
-    <div class="best-selling-card">
-        <div class="best-selling-header">
-            <h3>Best-Selling Categories</h3>
-            <div class="header-icon">
-                <i class="fas fa-tags"></i>
-            </div>
-        </div>
-        <div class="best-selling-list">
-            <% topCategories.forEach((category, index) => { %>
-                <div class="best-selling-item <%= index % 2 === 0 ? 'even' : 'odd' %>">
-                    <span class="category-name">
-                        <%= category._id %>
-                        <span class="category-rank">#<%= index + 1 %></span>
-                    </span>
-                    <span class="category-sales">
-                        <%= category.totalSold %> 
-                        <small>sold</small>
-                    </span>
-                </div>
-            <% }) %>
-        </div>
-    </div>
-</div>
+                                    <div class="best-selling-card">
+                                        <div class="best-selling-header">
+                                            <h3>Best-Selling Categories</h3>
+                                            <div class="header-icon">
+                                                <i class="fas fa-tags"></i>
+                                            </div>
+                                        </div>
+                                        <div class="best-selling-list">
+                                            <% topCategories.forEach((category, index) => { %>
+                                                <div class="best-selling-item <%= index % 2 === 0 ? 'even' : 'odd' %>">
+                                                    <span class="category-name">
+                                                        <%= category._id %>
+                                                        <span class="category-rank">#<%= index + 1 %></span>
+                                                    </span>
+                                                    <span class="category-sales">
+                                                        <%= category.totalSold %> 
+                                                        <small>sold</small>
+                                                    </span>
+                                                </div>
+                                            <% }) %>
+                                        </div>
+                                    </div>
+                                </div>
                         
                                 
                                 <hr>
@@ -733,18 +733,17 @@
                                         orderStatusMap.Returned
                                     ],
                                     backgroundColor: [
-                                        '#36a2eb', // Pending
-                                        '#ff6384', // Shipping
-                                        '#4bc0c0', // Delivered
-                                        '#ffcd56', // Cancelled
-                                        '#9966ff', // Return Request
-                                        '#ff9f40'  // Returned
+                                        '#36a2eb',
+                                        '#ff6384',
+                                        '#4bc0c0',
+                                        '#ffcd56',
+                                        '#9966ff',
+                                        '#ff9f40' 
                                     ]
                                 }]
                             }
                         });
                     
-                        // Line Chart: Shows total sales over the selected period
                         const lineChart = new Chart(document.getElementById('lineChart'), {
                             type: 'line',
                             data: {
