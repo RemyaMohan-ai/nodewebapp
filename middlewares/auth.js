@@ -8,12 +8,17 @@ const userauth =async (req,res,next)=>{
       
           const user = await User.findById(req.session.user);
       
-          if (!user || user.isBlocked) {
+          if (!user) {
             console.log("User not found or blocked");
+            
+            return res.status(400).redirect("/login");
+          }
+          if (user.isBlocked) {
+            console.log("User is blocked");
             req.session.destroy((err) => {
               if (err) console.error("Error destroying session:", err);
             });
-            return res.redirect("/login");
+            return res.redirect("/login"); 
           }
       
           req.user = user;
@@ -45,32 +50,32 @@ const adminauth = (req,res,next)=>{
 }
 
 
-const checkstatus =  (req,res,next)=>{
-    if(req.session.user){
-        User.findById(req.session.user)
-        .then(user=>{
-            if(user&&user.isBlocked){
-                req.session.destroy(err=>{
-                    if(err){
-                        console.log("Error destroying session:", err);
-                        res.status(500).send("Internal server error");
-                    }else {
-                        res.redirect('/blocked',{message:"account has been blocked"}); // Redirect to blocked page
-                    }
-                })
+// const checkstatus =  (req,res,next)=>{
+//     if(req.session.user){
+//         User.findById(req.session.user)
+//         .then(user=>{
+//             if(user&&user.isBlocked){
+//                 req.session.destroy(err=>{
+//                     if(err){
+//                         console.log("Error destroying session:", err);
+//                         res.status(500).send("Internal server error",err);
+//                     }else {
+//                         res.redirect('/blocked'); 
+//                     }
+//                 })
                 
-            }else{
-                next()
-            }
-        })
-        .catch(error=>{
-            console.log("Error fetching user:", error);
-            res.status(500).send("Internal server error");
-        })
-    }else {
-        next();
-    }
-};
+//             }else{
+//                 next()
+//             }
+//         })
+//         .catch(error=>{
+//             console.log("Error fetching user:", error);
+//             res.status(500).send("Internal server error");
+//         })
+//     }else {
+//         next();
+//     }
+// };
 
 
 const header =async (req,res,next)=>{
@@ -100,7 +105,7 @@ const cacheControl = (req, res, next) => {
 module.exports={
     userauth,
     adminauth,
-    checkstatus,
+    // checkstatus,
     header,
     cacheControl
 }

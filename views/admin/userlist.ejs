@@ -33,13 +33,17 @@
                                 <td><%= user.mobile %></td>
                                 <td>
                                     <% if (user.isBlocked === false) { %>
-                                        <button class="btn btn-danger" style="width: 80px;">
-                                            <a href="/admin/blockCustomer?id=<%=user._id%>" class="text-white" style="text-decoration: none;">Block</a>
-                                        </button>
+                                        
+                                        <button class="btn btn-danger text-white" style="width: 80px;" onclick="blockUser('<%=user._id%>')">Block</button>
+
                                         <%}else{%>
-                                        <button class="btn btn-success" style="width: 80px;">
+                                        <!-- <button class="btn btn-success" style="width: 80px;">
                                             <a href="/admin/unblockCustomer?id=<%=user._id%>" class="text-white" style="text-decoration: none;">Unblock</a>
-                                        </button> 
+                                        </button>  -->
+                                        <!-- <button class="btn btn-success" style="width: 80px;" onclick="UnBlockUser('<%=user._id%>')">
+                                            <a href="/admin/unblockCustomer?id=<%=user._id%>" class="text-white" style="text-decoration: none;">Unblock</a>
+                                        </button>  -->
+                                        <button class="btn btn-success text-white" style="width: 80px;" onclick="unBlockUser('<%=user._id%>')">Unblock</button>
 
                                         <%}%>
                                 </td>
@@ -59,6 +63,91 @@
                 </ul>
             </nav>
         </div>
+
+
+<script>
+
+    
+    function blockUser(userId) {
+    fetch('/admin/blockcustomer', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ userId: userId }) 
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'User has been blocked successfully.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    location.reload(); // Reload the page after success
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error!',
+                    text: data.message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error blocking user:', error);
+            Swal.fire({
+                title: 'Error!',
+                text: 'An error occurred while blocking the user.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        });
+}
+
+    function unBlockUser(userId) {
+    fetch('/admin/unBlockcustomer', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ userId: userId }) 
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'User has been Unbocked successfully.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    location.reload(); // Reload the page after success
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to Unblock user. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error unbocking user:', error);
+            Swal.fire({
+                title: 'Error!',
+                text: 'An error occurred while unbocking the user.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        });
+}
+
+
+</script>
 
 
 

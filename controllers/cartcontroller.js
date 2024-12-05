@@ -1,5 +1,7 @@
+const statuCodes = require("../statusCode")
+
+
 const product = require("../models/productSchema")
-const Wishlist = require("../models/wishlist")
 const Cart = require("../models/cartSchema")
 const User = require("../models/userSchema");
 const Address = require("../models/addressSchema");
@@ -71,7 +73,8 @@ const addCart = async (req, res) => {
         
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: "Server error", error });
+        const {code,message}= statuCodes.INTERNAL_SERVER_ERROR
+        res.status(code).json({ message: message, error });
 
         
     }
@@ -142,7 +145,8 @@ const loadCart = async (req, res) => {
 
     } catch (error) {
         console.log("error", error);
-       return res.status(500).send("Internal Server Error");
+        const {code,message}= statuCodes.INTERNAL_SERVER_ERROR
+        res.status(code).json({ message: message, error });
     }
 }
 
@@ -191,7 +195,6 @@ const quantity = async (req, res) => {
             { $inc: { "products.$.quantity": value } }
         );
 
-                    // console.log(result);
                     
         if (result.nModified === 0) {
             return res.status(400).json({ message: "Failed to update cart" });
@@ -201,8 +204,8 @@ const quantity = async (req, res) => {
 
     } catch (error) {
         console.log("Error:", error);
-        res.status(500).json({ message: "Server error" });
-    }
+        const {code,message}= statuCodes.INTERNAL_SERVER_ERROR
+        res.status(code).json({ message: message, error });    }
 };
 
 

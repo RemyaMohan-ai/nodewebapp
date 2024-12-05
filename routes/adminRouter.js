@@ -23,16 +23,15 @@ const productcontroller = require("../controllers/productcontroller")
 const ordercontroller = require("../controllers/adminordercontroller")
 const adminCouponController = require("../controllers/adminCouponController")
 const salesReportController = require("../controllers/saleReportController")
-const adminDashbordController = require("../controllers/adminDashboardController")
 
-const {userauth,adminauth} = require("../middlewares/auth")
+const {adminauth} = require("../middlewares/auth")
 
 
 
 
 
 router.get("/",adminauth,salesReportController.generateSalesReport)
-router.get("/dashboard/",adminauth,adminDashbordController.loadDashboard)
+router.get("/dashboard",adminauth,admincontroller.loadDashboard)
 
 
 router.get("/salesreport",adminauth,salesReportController.generateSalesReport)
@@ -43,8 +42,8 @@ router.get("/pageerror",admincontroller.adminerror)
 router.post("/logout",admincontroller.adminlogout)
 
 router.get("/users",adminauth,customercontroller.customerInfo)
-router.get("/blockcustomer",adminauth,customercontroller.customerBlocked)
-router.get("/unblockcustomer",adminauth,customercontroller.customerUnblock)
+router.post("/blockcustomer",adminauth,customercontroller.customerBlocked)
+router.post("/unBlockcustomer",adminauth,customercontroller.customerUnblock)
 
 router.get("/category",adminauth,categorycontroller.categoryInfo)
 router.get("/addcategory",adminauth,categorycontroller.loadaddcategory)

@@ -1,5 +1,6 @@
 <%- include('../layouts/user_layouts/userHeader.ejs') %>
 
+
 <style>
 .product_slider_img {
     display: flex;
@@ -238,114 +239,24 @@
   <script type="text/javascript" src="/path-to-your-slick/slick.min.js"></script>
 
   <script>
-//    $(document).ready(function(){
-//     // Initialize Slick Slider for the main product images
-//     $('.slider-for').slick({
-//         slidesToShow: 1,
-//         slidesToScroll: 1,
-//         arrows: true,
-//         fade: true,
-//         asNavFor: '.slider-nav'
-//     });
-
-//     // Initialize Slick Slider for the thumbnails
-//     $('.slider-nav').slick({
-//         slidesToShow: 4,
-//         slidesToScroll: 1,
-//         asNavFor: '.slider-for',
-//         dots: true,
-//         centerMode: true,
-//         focusOnSelect: true
-//     });
-
-//     // Initialize ElevateZoom on the main product image
-//     $('.zoom-image').each(function() {
-//         $(this).ezPlus({
-//             zoomType: 'lens',
-//             lensShape: 'round',
-//             lensSize: 200,
-//             cursor: 'crosshair'
-//         });
-//     });
-
-//     // Update ElevateZoom when the slider changes
-//     $('.slider-for').on('afterChange', function(event, slick, currentSlide){
-//         var currentImg = $('.slider-for .slick-current img');
-//         $('.zoom-image').not(currentImg).ezPlus('destroy'); // Remove zoom from previous images
-//         currentImg.ezPlus({
-//             zoomType: 'lens',
-//             lensShape: 'round',
-//             lensSize: 200,
-//             cursor: 'crosshair'
-//         });
-//     });
-// });
-
-
-// $(document).ready(function(){
-//     // Initialize Slick Slider for the main product images without arrows
-//     $('.slider-for').slick({
-//         slidesToShow: 1,
-//         slidesToScroll: 1,
-//         arrows: false, // Disable previous/next arrows
-//         fade: true,
-//         asNavFor: '.slider-nav'
-//     });
-
-//     // Initialize Slick Slider for the thumbnails
-//     $('.slider-nav').slick({
-//         slidesToShow: 4,
-//         slidesToScroll: 1,
-//         asNavFor: '.slider-for',
-//         dots: true,        // Enable dots below thumbnails
-//         centerMode: true,
-//         focusOnSelect: true,
-//         arrows: false      // Disable previous/next arrows for thumbnails too
-//     });
-
-//     // Initialize ElevateZoom on the main product image
-//     $('.zoom-image').each(function() {
-//         $(this).ezPlus({
-//             zoomType: 'lens',
-//             lensShape: 'round',
-//             lensSize: 200,
-//             cursor: 'crosshair'
-//         });
-//     });
-
-//     // Update ElevateZoom when the slider changes
-//     $('.slider-for').on('afterChange', function(event, slick, currentSlide){
-//         var currentImg = $('.slider-for .slick-current img');
-//         $('.zoom-image').not(currentImg).ezPlus('destroy'); // Remove zoom from previous images
-//         currentImg.ezPlus({
-//             zoomType: 'lens',
-//             lensShape: 'round',
-//             lensSize: 200,
-//             cursor: 'crosshair'
-//         });
-//     });
-// });
-
 
 $(document).ready(function(){
-    // Initialize Slick Slider for the main product images without arrows
     $('.slider-for').slick({
         slidesToShow: 1,
         slidesToScroll: 1,
-        arrows: false, // Disable previous/next arrows
+        arrows: false, 
         fade: true,
         asNavFor: '.slider-nav'
     });
 
-    // Initialize Slick Slider for the thumbnails
     $('.slider-nav').slick({
         slidesToShow: 4,
         slidesToScroll: 1,
         asNavFor: '.slider-for',
-        dots: true,        // Enable dots below thumbnails
+        dots: true,        
         centerMode: true,
         focusOnSelect: true,
-        arrows: false      // Disable previous/next arrows for thumbnails too
+        arrows: false      
     });
 });
 

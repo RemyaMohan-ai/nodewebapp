@@ -1,3 +1,4 @@
+const statusCodes = require("../statusCode")
 const Order = require('../models/orderSchema'); 
 const Address = require("../models/addressSchema")
 const Wallet = require("../models/walletSchema")
@@ -16,15 +17,17 @@ const getAllOrders = async (req, res) => {
         .limit(limit);
         const totalorders= await Order.countDocuments(); 
         const totalPages = Math.ceil(totalorders / limit);
-
-        res.render('orderlist', { 
+        const {code,message}=statusCodes.OK
+        res.status(code).render('orderlist', { 
             orders,
             totalPages: totalPages,
             currentPage: page
          });
     } catch (error) {
         console.error('Error fetching orders:', error);
-        return res.status(500).json({ message: 'Internal server error' });
+        const {code,message}=statusCodes.INTERNAL_SERVER_ERROR
+
+        return res.status(code).json({ message: message });
     }
 };
 
@@ -59,6 +62,21 @@ const updateOrderStatus = async (req, res) => {
             product.deliveryDate = deliveryDate; 
         }
 
+        if (product.orderStatus=='Return Initiated'){
+            const cac = await Order.find({userId,"productDetails.orderStatus":"Cancelled"})
+            console.log("cac",cac);
+            
+            const cancellationCount = await Order.countDocuments({userId,"productDetails.orderStatus":"Cancelled"})
+            console.log("cancellationCount in update orderStatus",cancellationCount)
+            if(cancellationCount>5){
+                const {code} = statusCodes.BAD_REQUEST
+                return res.status(code).json({
+                    success: false,
+                    message: "You cannot return an order. You have already canceled more than 5 orders.",
+                  });
+            }
+        }
+
         if(product.orderStatus=="Returned"){
             const incrementStock = await Product.findByIdAndUpdate(
                 { _id: productId },
@@ -83,11 +101,15 @@ const updateOrderStatus = async (req, res) => {
 
         await order.save();
        
+        const {code,message}=statusCodes.OK
 
-        res.status(200).json({ success: true, message: 'Order status updated successfully' });
+        res.status(code).json({ success: true, message: 'Order status updated successfully' });
     } catch (error) {
+
         console.error('Error updating order status:', error);
-        res.status(500).json({ success: false, message: 'Internal server error' })
+        const {code,message}=statusCodes.INTERNAL_SERVER_ERROR
+
+        res.status(code).json({ success: false, message: message})
     }
 };
 
@@ -112,7 +134,9 @@ console.log("orderedaddress",orderedaddress);
         )
     } catch (error) {
         console.log(error)
-        res.status(500).redirect('/pageNotFound');
+        const {code,message}=statusCodes.INTERNAL_SERVER_ERROR
+
+        res.status(code).redirect('/pageNotFound');
         
     }
 }

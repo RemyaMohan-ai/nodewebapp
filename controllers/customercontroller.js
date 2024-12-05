@@ -2,7 +2,7 @@
 
 
 const User = require("../models/userSchema")
-
+const Order = require("../models/orderSchema")
 
 
 const customerInfo = async (req,res)=>{
@@ -29,7 +29,6 @@ const customerInfo = async (req,res)=>{
             isAdmin:false,
             $or:[{name:{$regex:".*"+search+".*",$options:"i"}}],
         }).countDocuments();
-        console.log("userdata :",userData);
         
     res.render("userlist",{
         data:userData,
@@ -45,22 +44,41 @@ const customerInfo = async (req,res)=>{
 
 const customerBlocked = async (req,res)=>{
     try {
-       let id = req.query.id
-       await User.updateOne({_id:id},{$set:{isBlocked:true}})
-       res.redirect("/admin/users")
+       let userId = req.body.userId
+       const activeOrders = await Order.find({userId:userId,"productDetails.orderStatus":{$in:["Pending", "Return Requested","Shipping","Confirmed"]}})
+       console.log("existingOrder in customerBlocked",activeOrders);
+    //    if(activeOrders){
+    //     return res.status(400).json({success:false,message:"Unablle to Block Usere there are still orders pending"})
+    //    }
+      const updateduser = await User.updateOne({_id:userId},{$set:{isBlocked:true}})
+
+      if(!updateduser){
+        
+       return res.status(400).json({ success: false, message: "usernot found" }); // Send error response
+
+      }
+      return res.status(200).json({success: true, message: "User blocked successfully" })
     } catch (error) {
-        console.log("block failed");
-        res.redirect("/pageerror")      
+        console.log("block failed",error);
+        res.status(500).json({ success: false, message: "Failed to block user" }); // Send error response
     }
 }
+
 const customerUnblock = async (req,res)=>{
     try {
-       let id = req.query.id
-       await User.updateOne({_id:id},{$set:{isBlocked:false}})
-       res.redirect("/admin/users")
+       let userId = req.body.userId
+      const updateduser = await User.updateOne({_id:userId},{$set:{isBlocked:false}})
+      console.log("updateduser",updateduser);
+
+      if(!updateduser){
+        
+       return res.status(400).json({ success: false, message: "usernot found" }); // Send error response
+
+      }
+      return res.status(200).json({success: true, message: "User unblocked successfully" })
     } catch (error) {
-        console.log("unblock failed");
-        res.redirect("/admin/pageerror")      
+        console.log("block failed",error);
+        res.status(500).json({ success: false, message: "Failed to unblock user" }); // Send error response
     }
 }
 

@@ -1,98 +1,777 @@
 <%- include('../layouts/admin_layouts/adminHeader.ejs') %>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<div class="main-content">
-    <div class="main-content-inner">
-        <div class="tf-section-5 mb-30">
-            <div class="wg-box">
-                <div class="flex items-center justify-between">
-                    <h5>Recent Orders</h5>
-                    <div class="dropdown default">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="icon-more"><i class="icon-more-horizontal"></i></span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a href="javascript:void(0);" onclick="updateChart('daily')">This Day</a></li>
-                            <li><a href="javascript:void(0);" onclick="updateChart('weekly')">This Week</a></li>
-                            <li><a href="javascript:void(0);" onclick="updateChart('monthly')">This Month</a></li>
-                        </ul>
-                    </div>
+
+<style>
+    .chart {
+        padding: 60px 0px;
+    }
+
+    .statuses h4 {
+        padding-top: 5px;
+    }
+.best-selling-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+    color: #333;
+    font-weight: 600;
+}
+
+.best-selling-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background-color: #007bff;
+}
+
+.best-selling-container {
+    display: flex;
+    gap: 2rem;
+    padding: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.best-selling-card {
+    flex: 1;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.best-selling-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.best-selling-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.best-selling-header h3 {
+    margin: 0;
+    color: #343a40;
+    font-weight: 600;
+}
+
+.header-icon {
+    color: #6c757d;
+    font-size: 1.5rem;
+}
+
+.best-selling-list {
+    padding: 0;
+}
+
+.best-selling-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+    transition: background-color 0.3s ease;
+}
+
+.best-selling-item.even {
+    background-color: #f8f9fa;
+}
+
+.best-selling-item.odd {
+    background-color: #ffffff;
+}
+
+.best-selling-item:last-child {
+    border-bottom: none;
+}
+
+.best-selling-item:hover {
+    background-color: #e9ecef;
+}
+
+.product-name, 
+.category-name {
+    font-weight: 500;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.product-rank,
+.category-rank {
+    font-size: 0.8rem;
+    color: #6c757d;
+    background-color: #e9ecef;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+.product-sales,
+.category-sales {
+    font-weight: 600;
+    color: #28a745;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.product-sales small,
+.category-sales small {
+    color: #6c757d;
+    font-weight: 400;
+}
+.sales-summary {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.sales-header {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.sales-title {
+    color: #343a40;
+    position: relative;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.sales-period-badge {
+    background-color: #007bff;
+    color: white;
+    font-size: 0.7em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+.sales-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.sales-stat-card {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sales-stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+}
+
+.sales-stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.total-orders .sales-stat-icon {
+    background-color: rgba(0, 123, 255, 0.1);
+    color: #007bff;
+}
+
+.total-revenue .sales-stat-icon {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+}
+
+.total-discount .sales-stat-icon {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+.sales-stat-icon i {
+    font-size: 1.5rem;
+}
+
+.sales-stat-content {
+    flex-grow: 1;
+}
+
+.sales-stat-content h5 {
+    margin: 0 0 5px 0;
+    color: #6c757d;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.sales-stat-value {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #343a40;
+}
+.order-status-container {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.order-status-header {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.order-status-title {
+    color: #343a40;
+    position: relative;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.order-status-period-badge {
+    background-color: #007bff;
+    color: white;
+    font-size: 0.7em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+.order-status-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.total-order-card {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    margin-bottom: 15px;
+}
+
+.total-order-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: rgba(0, 123, 255, 0.1);
+    color: #007bff;
+    margin-right: 15px;
+}
+
+.total-order-icon i {
+    font-size: 1.5rem;
+}
+
+.total-order-content h4 {
+    margin: 0 0 5px 0;
+    color: #6c757d;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.total-order-value {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #343a40;
+}
+
+.order-status-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.order-status-card {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.order-status-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+}
+
+.order-status-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.pending .order-status-icon {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+}
+
+.shipping .order-status-icon {
+    background-color: rgba(23, 162, 184, 0.1);
+    color: #17a2b8;
+}
+
+.delivered .order-status-icon {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+}
+
+.cancelled .order-status-icon {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+.return-request .order-status-icon {
+    background-color: rgba(0, 123, 255, 0.1);
+    color: #007bff;
+}
+
+.returned .order-status-icon {
+    background-color: rgba(108, 117, 125, 0.1);
+    color: #6c757d;
+}
+
+.order-status-icon i {
+    font-size: 1.3rem;
+}
+
+.order-status-details h5 {
+    margin: 0 0 5px 0;
+    color: #6c757d;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.order-status-count {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #343a40;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .order-status-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .order-status-grid {
+        grid-template-columns: 1fr;
+    }
+}
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .sales-stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+    
+                    <div class="main-content">
+                        <!-- main-content-wrap -->
+                        <div class="main-content-inner">
+                            <!-- main-content-wrap -->
+                            <div class="main-content-wrap">
+                                <div class="content-header d-flex shadow justify-content-between">
+                                    <header class=" d-flex  justify-content-between">
+                                        <h2 class="content-title card-title">Dashboard</h2>
+                                    </header>
+                                    <div class="row my-4">
+                                        <form action="/admin/dashboard" method="GET" class="d-flex align-items-center">
+                                            <!-- Custom Date Range -->
+                                            <div id="custom-date" class=" align-items-center mt-2 d-none">
+                                                <label for="startDate" class="me-2">From:</label>
+                                                <input type="date" name="startDate" id="startDate" value="<%=startDate ? new Date(startDate).toLocaleDateString('en-CA') :'' %>" class="form-control me-3 rounded-0 border">
+                                               
+                                                <label for="endDate" class="me-2">To:</label>
+                                                <input type="date" name="endDate" id="endDate" value="<%=endDate ? new Date(endDate).toLocaleDateString('en-CA') : '' %>" class="form-control me-3 rounded-0 border">
+                                            </div>
+                                            <select name="filterType" class="form-select me-3 rounded-0 border" style="width: 200px; height: 45px;">
+                                                <option value="daily" <%= filterType === 'daily' ? 'selected' : '' %> >Daily</option>
+                                                <option value="weekly" <%= filterType === 'weekly' ? 'selected' : '' %>>Weekly</option>
+                                                <option value="yearly" <%= filterType === 'yearly' ? 'selected' : '' %>>Yearly</option>
+                                                <option value="custom" <%= filterType === 'custom' ? 'selected' : '' %>>Custom Date</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-success text-light rounded-0 border me-4">Filter</button>
+                                        </form>
+                                    </div>
+                                </div>
+                        
+                                <!-- Charts Section -->
+                                <div class="charts-container">
+                                    <div class="chart col-lg-12 d-flex">
+                                        <div class="col-lg-7">
+                                            <canvas id="lineChart"></canvas>
+                                        </div>
+                                        <div class="col-lg-5 py-5 ps-5 ">
+                                            <h3 class="mx-5 my-3 text-decoration-underline">Total Sales : <%= filterType %>
+                                            </h3>
+                                            <h4>Total orders : <%= salesCount %>
+                                            </h4>
+                                            <h4>Total Revenue : ₹ <%= totalAmount.toFixed(2) %>
+                                            </h4>
+                                            <h4></h4>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex">
+                                        <div class="chart col-lg-6 d-block">
+                                            <div class="col-lg-12 pb-5 ps-5 align-content-center ms-5">
+                                                <div class="col-8 my-5">
+                                                    <canvas id="doughnut"></canvas>
+                                                </div>
+                                                <!-- <h4 class="mx-5 my-3 text-decoration-underline">Profit & Sales : <%= filterType %>
+                                                </h4>
+                                                <h4>Total orders : <%= salesCount %>
+                                                </h4>
+                                                <h4>Total Revenue : ₹ <%= totalAmount.toFixed(2) %>
+                                                </h4>
+                                                <h4>Total Discount : ₹ <%= totalDiscount.toFixed(2) %>
+                                                </h4> -->
+
+                                                <div class="sales-summary">
+                                                    <div class="sales-header">
+                                                        <h4 class="sales-title">
+                                                            Profit & Sales: <%= filterType %>
+                                                            <span class="sales-period-badge"><%= filterType %></span>
+                                                        </h4>
+                                                    </div>
+                                                    
+                                                    <div class="sales-stats-grid">
+                                                        <div class="sales-stat-card total-orders">
+                                                            <div class="sales-stat-icon">
+                                                                <i class="fas fa-shopping-cart"></i>
+                                                            </div>
+                                                            <div class="sales-stat-content">
+                                                                <h5>Total Orders</h5>
+                                                                <p class="sales-stat-value"><%= salesCount %></p>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="sales-stat-card total-revenue">
+                                                            <div class="sales-stat-icon">
+                                                                <i class="fas fa-money-bill-wave"></i>
+                                                            </div>
+                                                            <div class="sales-stat-content">
+                                                                <h5>Total Revenue</h5>
+                                                                <p class="sales-stat-value">₹ <%= totalAmount.toFixed(2) %></p>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="sales-stat-card total-discount">
+                                                            <div class="sales-stat-icon">
+                                                                <i class="fas fa-tags"></i>
+                                                            </div>
+                                                            <div class="sales-stat-content">
+                                                                <h5>Total Discount</h5>
+                                                                <p class="sales-stat-value">₹ <%= totalDiscount.toFixed(2) %></p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <h4></h4>
+                                            </div>
+                                        </div>
+                                        <div class="chart col-lg-6 d-block">
+                                            <div class="col-lg-12 pb-5 ps-5 align-content-center ms-5">
+                                                <div class="col-8 my-5">
+                                                    <canvas id="polarArea"></canvas>
+                                                </div>
+                                                
+
+
+                                                    <div class="order-status-container">
+                                                        <div class="order-status-header">
+                                                            <h3 class="order-status-title">
+                                                                Order Statuses: <%= filterType %>
+                                                                <span class="order-status-period-badge"><%= filterType %></span>
+                                                            </h3>
+                                                        </div>
+                                                    
+                                                        <div class="order-status-summary">
+                                                            <div class="total-order-card">
+                                                                <div class="total-order-icon">
+                                                                    <i class="fas fa-clipboard-list"></i>
+                                                                </div>
+                                                                <div class="total-order-content">
+                                                                    <h4>Total Orders</h4>
+                                                                    <p class="total-order-value"><%= salesCount %></p>
+                                                                </div>
+                                                            </div>
+                                                    
+                                                            <div class="order-status-grid">
+                                                                <div class="order-status-card pending">
+                                                                    <div class="order-status-icon">
+                                                                        <i class="fas fa-pause-circle"></i>
+                                                                    </div>
+                                                                    <div class="order-status-details">
+                                                                        <h5>Pending</h5>
+                                                                        <p class="order-status-count"><%= orderStatusMap.Pending %></p>
+                                                                    </div>
+                                                                </div>
+                                                    
+                                                                <div class="order-status-card shipping">
+                                                                    <div class="order-status-icon">
+                                                                        <i class="fas fa-shipping-fast"></i>
+                                                                    </div>
+                                                                    <div class="order-status-details">
+                                                                        <h5>Shipped</h5>
+                                                                        <p class="order-status-count"><%= orderStatusMap.Shipping %></p>
+                                                                    </div>
+                                                                </div>
+                                                    
+                                                                <div class="order-status-card delivered">
+                                                                    <div class="order-status-icon">
+                                                                        <i class="fas fa-check-circle"></i>
+                                                                    </div>
+                                                                    <div class="order-status-details">
+                                                                        <h5>Delivered</h5>
+                                                                        <p class="order-status-count"><%= orderStatusMap.Delivered %></p>
+                                                                    </div>
+                                                                </div>
+                                                    
+                                                                <div class="order-status-card cancelled">
+                                                                    <div class="order-status-icon">
+                                                                        <i class="fas fa-times-circle"></i>
+                                                                    </div>
+                                                                    <div class="order-status-details">
+                                                                        <h5>Cancelled</h5>
+                                                                        <p class="order-status-count"><%= orderStatusMap.Cancelled %></p>
+                                                                    </div>
+                                                                </div>
+                                                    
+                                                                <div class="order-status-card return-request">
+                                                                    <div class="order-status-icon">
+                                                                        <i class="fas fa-undo"></i>
+                                                                    </div>
+                                                                    <div class="order-status-details">
+                                                                        <h5>Return Request</h5>
+                                                                        <p class="order-status-count"><%= orderStatusMap["Return Request"] %></p>
+                                                                    </div>
+                                                                </div>
+                                                    
+                                                                <div class="order-status-card returned">
+                                                                    <div class="order-status-icon">
+                                                                        <i class="fas fa-exchange-alt"></i>
+                                                                    </div>
+                                                                    <div class="order-status-details">
+                                                                        <h5>Returned</h5>
+                                                                        <p class="order-status-count"><%= orderStatusMap.Returned %></p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                        
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                        
+                               
+
+                                <h4 class="best-selling-title">Best-Selling Products & Categories (<%= filterType %>)</h4>
+<div class="best-selling-container">
+    <div class="best-selling-card">
+        <div class="best-selling-header">
+            <h3>Best-Selling Products</h3>
+            <div class="header-icon">
+                <i class="fas fa-box"></i>
+            </div>
+        </div>
+        <div class="best-selling-list">
+            <% topProducts.forEach((product, index) => { %>
+                <div class="best-selling-item <%= index % 2 === 0 ? 'even' : 'odd' %>">
+                    <span class="product-name">
+                        <%= product.productName %>
+                        <span class="product-rank">#<%= index + 1 %></span>
+                    </span>
+                    <span class="product-sales">
+                        <%= product.totalSold %> 
+                        <small>sold</small>
+                    </span>
                 </div>
-                <div class="chart-container">
-                    <canvas id="orderChart"></canvas>
+            <% }) %>
+        </div>
+    </div>
+
+    <div class="best-selling-card">
+        <div class="best-selling-header">
+            <h3>Best-Selling Categories</h3>
+            <div class="header-icon">
+                <i class="fas fa-tags"></i>
+            </div>
+        </div>
+        <div class="best-selling-list">
+            <% topCategories.forEach((category, index) => { %>
+                <div class="best-selling-item <%= index % 2 === 0 ? 'even' : 'odd' %>">
+                    <span class="category-name">
+                        <%= category._id %>
+                        <span class="category-rank">#<%= index + 1 %></span>
+                    </span>
+                    <span class="category-sales">
+                        <%= category.totalSold %> 
+                        <small>sold</small>
+                    </span>
                 </div>
-              </div>
+            <% }) %>
         </div>
     </div>
 </div>
+                        
+                                
+                                <hr>
+                        
+                        
+                            </section>
+                            </div>
+                            <!-- /main-content-wrap -->
+                        </div>
+                        <!-- /main-content-wrap -->
+                        <!-- bottom-page -->
 
-<script>
-    let orderChart;
-
-    // Function to update the chart based on filter type
-    async function updateChart(filterType) {
-        try {
-            // Fetch data from the backend based on the selected filterType
-            const response = await fetch(`/admin/dashboard/?filterType=${filterType}`);
-            
-            // Check if the response is ok and contains JSON data
-            if (!response.ok) throw new Error("Network response was not ok");
-            const data = await response.json();
-
-            // Process the data: extract dates and total prices
-            const labels = data.map(order => new Date(order.date).toLocaleDateString());
-            const values = data.map(order => order.totalPrice);
-
-            // Destroy previous chart instance if it exists
-            if (orderChart) {
-                orderChart.destroy();
-            }
-
-            // Render the chart
-            const ctx = document.getElementById('orderChart').getContext('2d');
-            orderChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: `Total Sales (${filterType})`,
-                        data: values,
-                        fill: false,
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        tension: 0.1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top',
-                        }
-                    },
-                    scales: {
-                        x: {
-                            display: true,
-                            title: {
-                                display: true,
-                                text: 'Date'
+                        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', () => {
+                                const filterType = document.querySelector('[name="filterType"]');
+                                const customDateSection = document.getElementById('custom-date');
+                    
+                                const toggleCustomDate = () => {
+                                    if (filterType.value === 'custom') {
+                                        customDateSection.classList.remove('d-none');
+                                        customDateSection.classList.add('d-flex');
+                    
+                                    } else {
+                                        customDateSection.classList.remove('d-flex');
+                                        customDateSection.classList.add('d-none');
+                                    }
+                                };
+                                filterType.addEventListener('change', toggleCustomDate);
+                                toggleCustomDate();
+                            });
+                        </script>
+                       <script>
+                        const totalAmount = '<%= totalAmount %>';
+                        const totalDiscount = '<%= totalDiscount %>';
+                        
+                        const salesReport = <%- JSON.stringify(salesReport) %>;
+                        
+                        const orderLabels = salesReport.map(order => new Date(order.createdAt).toLocaleDateString());
+                        const orderAmounts = salesReport.map(order => order.finalPrice || order.totalPrice);
+                        const discountAmounts = salesReport.map(order => order.totalDiscount||0);
+                    
+                        const doughnut = new Chart(document.getElementById('doughnut'), {
+                            type: 'pie',
+                            data: {
+                                labels: ['Total Sales', 'Total Discount'], 
+                                datasets: [{
+                                    data: [totalAmount, totalDiscount],
+                                    backgroundColor: ['#36a2eb', '#ff6384']
+                                }]
                             }
-                        },
-                        y: {
-                            display: true,
-                            title: {
-                                display: true,
-                                text: 'Total Price'
+                        });
+                    
+                        const orderStatusMap = {
+                            Pending: '<%= orderStatusMap.Pending %>',
+                            Shipping: '<%= orderStatusMap.Shipping %>',
+                            Delivered: '<%= orderStatusMap.Delivered %>',
+                            Cancelled: '<%= orderStatusMap.Cancelled %>',
+                            ReturnRequest: '<%= orderStatusMap["Return Request"] %>',
+                            Returned: '<%= orderStatusMap.Returned %>'
+                        };
+                        const polarArea = new Chart(document.getElementById('polarArea'), {
+                            type: 'polarArea',
+                            data: {
+                                labels: ['Pending', 'Shipping', 'Delivered', 'Cancelled', 'Return Request', 'Returned'],
+                                datasets: [{
+                                    data: [
+                                        orderStatusMap.Pending,
+                                        orderStatusMap.Shipping,
+                                        orderStatusMap.Delivered,
+                                        orderStatusMap.Cancelled,
+                                        orderStatusMap.ReturnRequest,
+                                        orderStatusMap.Returned
+                                    ],
+                                    backgroundColor: [
+                                        '#36a2eb', // Pending
+                                        '#ff6384', // Shipping
+                                        '#4bc0c0', // Delivered
+                                        '#ffcd56', // Cancelled
+                                        '#9966ff', // Return Request
+                                        '#ff9f40'  // Returned
+                                    ]
+                                }]
                             }
-                        }
-                    }
-                }
-            });
-        } catch (error) {
-            console.error("Error updating chart:", error);
-        }
-    }
+                        });
+                    
+                        // Line Chart: Shows total sales over the selected period
+                        const lineChart = new Chart(document.getElementById('lineChart'), {
+                            type: 'line',
+                            data: {
+                                labels: orderLabels,
+                                datasets: [{
+                                    label: 'Total Sales',
+                                    data: orderAmounts,
+                                    borderColor: '#ffcd56',
+                                    fill: false,
+                                    tension: .3
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    x: {
+                                        beginAtZero: true
+                                    },
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+                    </script>
+                    
+                    
 
-    // Load chart with default filter (e.g., daily) on page load
-    updateChart('daily');
-</script>
+<%- include('../layouts/admin_layouts/adminFooter.ejs') %>
+

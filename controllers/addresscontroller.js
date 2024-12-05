@@ -48,7 +48,6 @@ const checkout = async (req, res) => {
         const finalPrice = cartItem.finalPrice || 0;
         console.log("FinalPrice in checkout:", finalPrice);
 
-        // console.log("cartItem",cartItem);
         
         if (!addressDocument || !addressDocument.address || addressDocument.address.length === 0) {
             console.log("no address found");
@@ -100,7 +99,6 @@ const selectAddress = async (req, res) => {
         const selectedAddressId = req.body.selectedAddress;
 
         req.session.selectedAddress = selectedAddressId;
-        // console.log("req.session.selectedAddress ",req.session.selectedAddress );
         
         res.redirect('/cart/checkout');
     } catch (error) {

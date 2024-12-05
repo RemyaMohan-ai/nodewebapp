@@ -181,9 +181,7 @@
                 </div>
         
             </div>
-            <!-- /order-list -->
         </div>
-        <!-- /main-content-wrap -->
     </div>
     
 </div>
@@ -212,11 +210,20 @@
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Order status updated successfully.');
+            Swal.fire("success",data.message)
+            .then(()=>{
+               location.reload()
+                    })
         } else {
-            alert('Error updating order status.');
+            Swal.fire("failed", data.message)
+            .then(()=>{
+                 location.reload()
+              })
         }
-    })
+    }
+    
+)
+    
     .catch(error => {
         console.error('Error:', error);
     });

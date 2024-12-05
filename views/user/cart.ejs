@@ -163,18 +163,18 @@
 
               
               <div class="d-flex">              
-                <input type="text" id="appliedCouponCode" placeholder="Enter coupon code"  />
+                <input type="text" id="appliedCouponCode" placeholder="Enter coupon code" oninput="toggleapplyCouponBtn()" />
 
               </div>
               <a class="tp_btn" id="removeCouponBtn" onclick="removeCoupon()" style="display: none;"">Remove Coupon</a>
 
-              <a class="tp_btn"id="applyCouponBtn" onclick="applyCoupon(document.getElementById('appliedCouponCode').value)">Apply Coupon</a>
+              <a class="tp_btn"id="applyCouponBtn" onclick="applyCoupon(document.getElementById('appliedCouponCode').value )" disabled>Apply Coupon</a>
 
 
             </div>
             <p id="couponMessage" style="margin-top: 10px;"></p>
 
-            <div class="col-lg-2"></div>
+            <div class="col-lg-2 d-flex-colom"></div>
             <div class="order_box col-lg-6">
               <h2>Your Order</h2>
               <ul class="list">
@@ -204,7 +204,7 @@
                        
                     </a>
                 </li>
-            </ul>
+              </ul>
               <ul class="list list_2">
                 <li>
                     <a href="#" >
@@ -216,25 +216,24 @@
                 </li>
             </ul>
          
-<!-- Coupon Discount -->
-<ul class="list list_2" id="couponDiscountContainer" >
-  <li>
-    <a href="#">
-      Coupon Discount:
-      <span><span id="discountAmount">0</span></span>
-    </a>
-  </li>
-</ul>
+            <ul class="list list_2" id="couponDiscountContainer" >
+              <li>
+                <a href="#">
+                  Coupon Discount:
+                  <span><span id="discountAmount">0</span></span>
+                </a>
+              </li>
+            </ul>
 
 <!-- Final Price -->
-<ul class="list list_2">
-  <li>
-    <a href="#">
-      Final Price:
-      <span><span id="finalPrice"><%= totalPrice %></span></span>
-    </a>
-  </li>
-</ul>
+            <ul class="list list_2">
+              <li>
+                <a href="#">
+                  Final Price:
+                  <span><span id="finalPrice"><%= totalPrice %></span></span>
+                </a>
+              </li>
+            </ul>
 
 
 
@@ -242,26 +241,13 @@
 
 
 
-              <div class="payment_item">
-                <div class="radion_btn">
-                  <input type="radio" id="f-option5" name="selector" />
-                  <label for="f-option5">Check payments</label>
-                  <div class="check"></div>
-                </div>
-               
-              </div>
-              <div class="payment_item active">
-                <div class="radion_btn">
-                  <input type="radio" id="f-option6" name="selector" />
-                  <label for="f-option6">Paypal </label>
-                  <img src="img/product/single-product/card.jpg" alt="" />
-                  <div class="check"></div>
-                </div>
-              </div>
-          </div>
-          <div class="checkout_btn_inner float-right">
-            <a class="btn_1" href="#">Continue Shopping</a>
-            <a class="btn_1 checkout_btn_1" href="/cart/checkout">Proceed to checkout</a>
+              
+              
+            </div>
+          
+          <div class="checkout_btn_inner float-right " style="margin-top: 4em;" >
+            <a class="btn_1" href="/" >Continue Shopping</a>
+            <a class="btn_1 checkout_btn_1" href="/cart/checkout" >Proceed to checkout</a>
           </div>
         </div>
         <% } %>
@@ -288,6 +274,16 @@
 
 
   <script>
+
+function toggleapplyCouponBtn(){
+  const couponCode = document.getElementById("appliedCouponCode").value.trim()
+const applyCouponBtn = document.getElementById("applyCouponBtn")
+applyCouponBtn.disabled = couponCode===""
+}
+
+
+
+
 
 function applyCoupon(couponCode) {
   const totalPrice = parseFloat(document.getElementById('cartTotal').dataset.total) || 0;

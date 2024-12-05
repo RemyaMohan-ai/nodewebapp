@@ -505,11 +505,6 @@ const generateSalesData = async (filter, page = 1, pageSize = 5,start, end) => {
         matchStage.createdAt = { $gte: startDate, $lte: endDate };
     }
 
-    // const totalSalesCount = await Order.aggregate([
-    //     { $match: matchStage }
-    // ]);
-
-    // const totalSalesData = totalSalesCount.length;
     const totalSalesData = await Order.aggregate([
         { $match: matchStage },
     ]).count('totalCount'); // Count total without pagination
@@ -571,7 +566,6 @@ const generateSalesData = async (filter, page = 1, pageSize = 5,start, end) => {
     const salesData = await Order.aggregate(salesDataPipeline);
     const totalPages = pageSize ? Math.ceil(totalRecords / pageSize) : null;
 
-    // const totalPages =page && pageSize ? Math.ceil(totalSalesData / pageSize):null;
     console.log("totalPages,totalPage",totalPages);
 
     const bestSellingProducts = await Order.aggregate([
@@ -624,7 +618,7 @@ const generateSalesData = async (filter, page = 1, pageSize = 5,start, end) => {
         {
             $lookup: {
                 from: 'categories',
-                localField: 'productInfo.category', // Matching with category name as a string
+                localField: 'productInfo.category', 
                 foreignField: 'name',
                 as: 'categoryInfo'
             }

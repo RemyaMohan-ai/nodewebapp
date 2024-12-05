@@ -13,7 +13,7 @@ const userCouponController = require("../controllers/usercouponcontroller")
 const walletController = require("../controllers/walletController")
 
 
-router.use(checkstatus)
+// router.use(checkstatus)
 router.use(cacheControl);
 
 router.get("/blocked",usercontroller.blockUser)
